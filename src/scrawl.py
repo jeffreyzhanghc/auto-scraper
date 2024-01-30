@@ -158,14 +158,5 @@ async def scrawl(seed_urls,program_urls,results_path,i,batch_size = 3):
     print('task is finished in:'+str(total_run_time))
     
     
-    
-#Load Config
-load_dotenv()
-seedurls = os.getenv("seedurls")
-output_path = os.getenv("outputpath")
-### Input Configs
-#url_file = "../knowledge_files/gpt_selected_url.json"
-#output_path = "grad_info.json"
-asyncio.run(scrawl(seedurls,output_path,17,batch_size=2))
 
 

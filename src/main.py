@@ -3,6 +3,7 @@ from collect_seed_url import collect_seed_url
 from seed_url_detector import seed_url_detector
 from program_url_detector import detect_prorgams
 from scrawl import scrawl
+import asyncio
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -120,13 +121,12 @@ gpt_selected_seed_urls = os.getenv("gpt_selected_seed_urls")
 program_urls = os.getenv("program_urls")
 gpt_selected_program_urls = os.getenv("gpt_selected_program_urls")
 final_output_path = os.getenv("final_output_path")
-i = os.getenv('start_index')
-batch_size = os.getenv('batch_size')
-
+i = int(os.getenv('start_index'))
+batch_size = int(os.getenv('batch_size'))
 #call functions
 collect_seed_url(seed_urls,universities)
 seed_url_detector(seed_urls,gpt_selected_seed_urls)
 detect_prorgams(universities,program_urls,gpt_selected_program_urls)
-scrawl(gpt_selected_seed_urls,program_urls,final_output_path,i,batch_size)
+asyncio.run(scrawl(gpt_selected_seed_urls,program_urls,final_output_path,i,batch_size))
 
 

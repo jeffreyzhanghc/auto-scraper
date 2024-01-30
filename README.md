@@ -58,7 +58,7 @@ gpt_selected_program_urls = "../knowledge_files/gpt_selected_programs_url.json"
 #path to store final output
 final_output_path = "grad_info.json"
 #index in list of universities to begin crawl
-i = 0
+start_index = 0
 #number of universities scrawling each time, suggesting 2-5
 batch_size = 2
 ```
