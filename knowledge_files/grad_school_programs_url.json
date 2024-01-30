@@ -1,0 +1,518 @@
+{
+    "Massachusetts Institute of Technology (MIT)": [
+        "https://oge.mit.edu/graduate-admissions/programs/masters-degrees/",
+        "https://oge.mit.edu/gpp/advanced-degrees/masters-degree/",
+        "https://www.mastersportal.com/universities/11740/massachusetts-institute-of-technology.html"
+    ],
+    "Stanford University": [
+        "https://gradadmissions.stanford.edu/explore-programs",
+        "https://gradadmissions.stanford.edu/",
+        "https://ed.stanford.edu/academics/masters"
+    ],
+    "Harvard University": [
+        "https://gsas.harvard.edu/programs",
+        "https://www.harvard.edu/programs/",
+        "https://www.mastersportal.com/universities/11731/harvard-university.html"
+    ],
+    "California Institute of Technology (Caltech)": [
+        "https://gradoffice.caltech.edu/academics/optionreps",
+        "https://gradoffice.caltech.edu/academics/degrees",
+        "https://www.mastersportal.com/universities/11712/california-institute-of-technology-caltech.html"
+    ],
+    "University of Chicago": [
+        "https://www.uchicago.edu/en/education-and-research/graduate-programs",
+        "https://grad.uchicago.edu/admissions/programs/",
+        "https://professional.uchicago.edu/find-your-fit/masters"
+    ],
+    "Princeton University": [
+        "https://gradschool.princeton.edu/academics/degrees-requirements/fields-study",
+        "https://gradschool.princeton.edu/",
+        "https://gradschool.princeton.edu/academics/degrees-requirements"
+    ],
+    "Cornell University": [
+        "https://gradschool.cornell.edu/admissions/degrees-fields/cugradfos/",
+        "https://gradschool.cornell.edu/admissions/degrees-fields/graduate-school-degrees/",
+        "https://www.mastersportal.com/universities/11718/cornell-university.html"
+    ],
+    "Yale University": [
+        "https://www.yale.edu/academics/graduate-professional-study",
+        "https://www.mastersportal.com/universities/11715/yale-university.html",
+        "https://catalog.yale.edu/environment/masters-degree-programs/"
+    ],
+    "Columbia University": [
+        "https://sps.columbia.edu/academics/masters",
+        "https://www.columbia.edu/content/category/degree-programs"
+    ],
+    "University of Pennsylvania": [
+        "https://catalog.upenn.edu/graduate/programs/",
+        "https://www.upenn.edu/academics/graduate",
+        "https://catalog.upenn.edu/programs/"
+    ],
+    "University of Michigan": [
+        "https://rackham.umich.edu/programs-of-study/",
+        "https://umich.edu/academics/",
+        "https://umdearborn.edu/academics/graduate-studies/graduate-programs"
+    ],
+    "Johns Hopkins University": [
+        "https://www.jhu.edu/academics/",
+        "https://www.jhu.edu/academics/graduate-studies/",
+        "https://www.mastersportal.com/universities/11736/johns-hopkins-university.html"
+    ],
+    "Northwestern University": [
+        "https://www.northwestern.edu/academics/graduate-a-to-z.html",
+        "https://www.tgs.northwestern.edu/admission/academic-programs/explore-programs/",
+        "https://sps.northwestern.edu/masters/"
+    ],
+    "University of California, Berkeley": [
+        "https://grad.berkeley.edu/admissions/choosing-your-program/list/",
+        "https://grad.berkeley.edu/programs/",
+        "https://www.mastersportal.com/universities/11801/university-of-california-berkeley.html"
+    ],
+    "University of California, Los Angeles (UCLA)": [
+        "https://grad.ucla.edu/schools/",
+        "https://grad.ucla.edu/academics/masters-studies/",
+        "https://www.mastersportal.com/universities/11795/university-of-california-los-angeles.html"
+    ],
+    "Duke University": [
+        "https://gradschool.duke.edu/academics/programs-and-degrees/",
+        "https://gradschool.duke.edu/academics/programs-and-degrees/masters-programs/",
+        "https://www.mastersportal.com/universities/11720/duke-university.html"
+    ],
+    "University of California, San Diego": [
+        "https://grad.ucsd.edu/admissions/programs.html",
+        "https://students.ucsd.edu/academics/graduate-programs/grad-programs-ucsd.html",
+        "https://catalog.ucsd.edu/graduate/degrees-offered/index.html"
+    ],
+    "Brown University": [
+        "https://graduateprograms.brown.edu/",
+        "https://www.brown.edu/academics/graduate",
+        "https://www.mastersportal.com/universities/11713/brown-university.html"
+    ],
+    "University of Wisconsin-Madison": [
+        "https://grad.wisc.edu/academic-programs/",
+        "https://guide.wisc.edu/graduate/",
+        "https://grad.wisc.edu/"
+    ],
+    "New York University (NYU)": [
+        "https://www.sps.nyu.edu/homepage/academics/masters-degrees.html",
+        "https://gsas.nyu.edu/programs/masters-programs.html",
+        "https://www.nyu.edu/academics/nyu-online/graduate-degrees.html"
+    ],
+    "University of Texas at Austin": [
+        "https://gradschool.utexas.edu/degrees-programs",
+        "https://catalog.utexas.edu/graduate/graduate-study/graduate-degrees/",
+        "https://www.mastersportal.com/universities/11735/university-of-texas-at-austin.html"
+    ],
+    "Carnegie Mellon University": [
+        "https://www.cmu.edu/graduate/academics/guide-to-graduate-degrees-and-programs/index.html",
+        "https://www.cs.cmu.edu/academics/masters/programs",
+        "https://www.mastersportal.com/universities/11714/carnegie-mellon-university.html"
+    ],
+    "University of Washington": [
+        "https://grad.uw.edu/programs/find-a-program/",
+        "https://www.washington.edu/students/gencat/degree_programs.html",
+        "https://grad.uw.edu/"
+    ],
+    "University of Illinois at Urbana-Champaign": [
+        "http://catalog.illinois.edu/graduate/",
+        "https://grad.illinois.edu/admissions/depts",
+        "http://catalog.illinois.edu/undergraduate/bachelor-masters-programs/"
+    ],
+    "University of California, San Francisco": [
+        "https://graduate.ucsf.edu/admission/programs",
+        "https://www.usfca.edu/academics/find-your-program/graduate",
+        "https://graduate.ucsf.edu/academics/masters-degree"
+    ],
+    "University of Southern California": [
+        "https://gradadm.usc.edu/our-programs/",
+        "https://catalogue.usc.edu/content.php?catoid=11&navoid=3426",
+        "https://online.usc.edu/programs/"
+    ],
+    "Purdue University": [
+        "https://www.purdue.edu/gradschool/academics/graduate-degree-programs.html",
+        "https://www.purdue.edu/gradschool/academics/programs.html",
+        "https://online.purdue.edu/programs/masters-degrees"
+    ],
+    "University of Maryland, College Park": [
+        "https://gradschool.umd.edu/admissions/programs-a-to-z",
+        "https://academiccatalog.umd.edu/filters/",
+        "https://gradschool.umd.edu/graduate-programs"
+    ],
+    "University of Minnesota": [
+        "https://grad.umn.edu/graduate-programs",
+        "https://apps.grad.umn.edu/programs/selector.aspx",
+        "https://apps.grad.umn.edu/programs/"
+    ],
+    "University of North Carolina, Chapel Hill": [
+        "https://gradschool.unc.edu/programs/",
+        "https://gradschool.unc.edu/programs/masters.html",
+        "https://catalog.unc.edu/graduate/degree-programs/"
+    ],
+    "Boston University": [
+        "https://www.bu.edu/academics/degree-programs/",
+        "https://www.bu.edu/grad/program-search/",
+        "https://www.bu.edu/cas/academics/ma-ms-academics/degree-programs/"
+    ],
+    "Pennsylvania State University": [
+        "https://bulletins.psu.edu/graduate-professional-programs/",
+        "https://www.psu.edu/academics/graduate-degrees/",
+        "https://bulletins.psu.edu/graduate/programs/majors/"
+    ],
+    "Ohio State University": [
+        "https://gpadmissions.osu.edu/programs/programs.aspx",
+        "https://gradsch.osu.edu/future-students/find-your-program",
+        "https://www.mastersportal.com/universities/11757/the-ohio-state-university.html"
+    ],
+    "University of California, Davis": [
+        "https://www.ucdavis.edu/academics/graduate",
+        "https://grad.ucdavis.edu/graduate-programs",
+        "https://www.mastersportal.com/universities/11800/university-of-california-davis.html"
+    ],
+    "University of California, Santa Barbara": [
+        "https://www.ucsb.edu/academics/graduate",
+        "https://www.graddiv.ucsb.edu/graduate-programs",
+        "https://www.graddiv.ucsb.edu/graduate-programs/departments"
+    ],
+    "University of California, Irvine": [
+        "https://catalogue.uci.edu/graduatedegrees/",
+        "https://grad.uci.edu/admissions/degree-programs/",
+        "https://publichealth.uci.edu/degrees-programs/graduate-programs/"
+    ],
+    "University of Florida": [
+        "https://gradcatalog.ufl.edu/graduate/degrees/",
+        "https://gradcatalog.ufl.edu/graduate/programs-college/",
+        "https://graduateschool.ufl.edu/apply/degrees/"
+    ],
+    "Rice University": [
+        "https://graduate.rice.edu/programs-study",
+        "https://ga.rice.edu/graduate-students/academic-opportunities/degree-chart/",
+        "https://online.rice.edu/degrees"
+    ],
+    "Michigan State University": [
+        "https://reg.msu.edu/academicprograms/Programs.aspx?PType=GR",
+        "https://grad.msu.edu/departments",
+        "https://comartsci.msu.edu/masters-programs"
+    ],
+    "Indiana University Bloomington": [
+        "https://college.indiana.edu/academics/degrees-majors/masters/index.html",
+        "https://graduate.indiana.edu/admissions/programs.html",
+        "https://education.indiana.edu/programs/graduate/masters/index.html"
+    ],
+    "University of Virginia": [
+        "https://graddiversity.virginia.edu/graduate-schools-degree-programs",
+        "https://www.virginia.edu/academics/graduate",
+        "https://www.mastersportal.com/universities/12115/university-of-virginia.html"
+    ],
+    "University of Colorado Boulder": [
+        "https://www.colorado.edu/bb/grad-programs",
+        "https://www.colorado.edu/graduateschool/",
+        "https://catalog.colorado.edu/graduate/"
+    ],
+    "Rutgers University-New Brunswick": [
+        "https://newbrunswick.rutgers.edu/explore-graduate-professional-programs",
+        "https://grad.rutgers.edu/academics/graduate-programs",
+        "https://newbrunswick.rutgers.edu/graduate-and-professional-studies"
+    ],
+    "Texas A&M University": [
+        "https://grad.tamu.edu/academics/program-directory",
+        "https://catalog.tamu.edu/graduate/degrees-programs/",
+        "https://www.mastersportal.com/universities/11780/texas-am-university.html"
+    ],
+    "Georgia Institute of Technology": [
+        "https://www.gatech.edu/academics/masters-degree-programs",
+        "https://grad.gatech.edu/degree-programs",
+        "https://www.mastersportal.com/universities/11725/georgia-institute-of-technology.html"
+    ],
+    "University of Pittsburgh": [
+        "https://www.academics.pitt.edu/graduate-professional",
+        "https://www.asgraduate.pitt.edu/academics/departments-and-programs",
+        "https://www.mastersportal.com/universities/11747/university-of-pittsburgh.html"
+    ],
+    "Washington University in St. Louis": [
+        "https://gradstudies.artsci.wustl.edu/browse",
+        "https://bulletin.wustl.edu/grad/caps/masters/",
+        "https://wustl.edu/academics/graduate-professional-advanced-learning/"
+    ],
+    "University of Rochester": [
+        "https://www.rochester.edu/college/gradstudies/academics/programs.html",
+        "https://www.urmc.rochester.edu/education/graduate/masters-degrees.aspx",
+        "https://www.mastersportal.com/universities/11741/university-of-rochester.html"
+    ],
+    "Vanderbilt University": [
+        "https://gradschool.vanderbilt.edu/academics/programs_and_departments.php",
+        "https://www.vanderbilt.edu/catalogs/graduate/",
+        "https://www.vanderbilt.edu/admissions/graduate-professional-school-admissions/"
+    ],
+    "University of Notre Dame": [
+        "https://www.nd.edu/academics/graduate-programs/",
+        "https://graduateschool.nd.edu/degree-programs/",
+        "https://www.mastersportal.com/universities/11463/university-of-notre-dame.html"
+    ],
+    "University of Miami": [
+        "https://www.grad.miami.edu/graduate-education/a-z-listing-graduate-programs/index.html",
+        "https://bulletin.miami.edu/graduate-academic-programs/",
+        "https://www.grad.miami.edu/"
+    ],
+    "University of Arizona": [
+        "https://grad.arizona.edu/catalog/",
+        "https://catalog.arizona.edu/graduate-programs",
+        "https://online.arizona.edu/programs/graduate"
+    ],
+    "University of Massachusetts Amherst": [
+        "https://www.umass.edu/gateway/academics/graduate-programs",
+        "https://www.umass.edu/graduate/academics/programs",
+        "https://www.mastersportal.com/universities/12295/university-of-massachusetts-amherst.html"
+    ],
+    "University of Connecticut": [
+        "https://gradcatalog.uconn.edu/academic-programs/",
+        "https://grad.uconn.edu/programs/",
+        "https://online.uconn.edu/online-masters-degrees/"
+    ],
+    "Dartmouth College": [
+        "https://graduate.dartmouth.edu/academics/programs",
+        "https://home.dartmouth.edu/degrees",
+        "https://www.usnews.com/best-graduate-schools/top-graduate-schools/dartmouth-college-182670"
+    ],
+    "Emory University": [
+        "https://www.gs.emory.edu/degree-programs/index.html",
+        "https://www.emory.edu/home/admission/graduate-professional.html",
+        "https://www.mastersportal.com/universities/11723/emory-university.html"
+    ],
+    "University of Georgia": [
+        "https://grad.uga.edu/programs/",
+        "https://grad.uga.edu/",
+        "https://grad.uga.edu/graduate-bulletin/masters-degree-requirements/"
+    ],
+    "University of California, Riverside": [
+        "https://graduate.ucr.edu/programs",
+        "https://graduate.ucr.edu/",
+        "https://chass.ucr.edu/graduate-programs"
+    ],
+    "University of Iowa": [
+        "https://grad.admissions.uiowa.edu/areas-of-study",
+        "https://grad.uiowa.edu/programs/graduate-programs",
+        "https://grad.uiowa.edu/programs"
+    ],
+    "Virginia Tech": [
+        "https://graduateschool.vt.edu/academics/programs.html",
+        "https://www.vt.edu/academics/graduate-school.html",
+        "https://liberalarts.vt.edu/academics/graduate-programs.html"
+    ],
+    "Georgetown University": [
+        "https://grad.georgetown.edu/programs/",
+        "https://www.georgetown.edu/admissions/graduate-admissions/",
+        "https://www.mastersportal.com/universities/12056/georgetown-university.html"
+    ],
+    "University of Colorado, Denver": [
+        "https://www.ucdenver.edu/academics/degrees-programs/graduate-degrees",
+        "https://www.ucdenver.edu/graduate-education",
+        "https://catalog.ucdenver.edu/cu-anschutz/schools-colleges-programs/graduate-school/graduate-school-masters-programs/"
+    ],
+    "University of Illinois, Chicago": [
+        "https://catalog.uic.edu/gcat/degree-programs/grad-prof-degree-programs/",
+        "https://grad.uic.edu/programs/",
+        "https://grad.uic.edu/masters-degrees/"
+    ],
+    "University of Oregon": [
+        "https://catalog.uoregon.edu/gr-programs/",
+        "https://insight.uoregon.edu/portal/academic_programs",
+        "https://www.mastersportal.com/universities/12252/university-of-oregon.html"
+    ],
+    "Case Western Reserve University": [
+        "https://case.edu/gradstudies/prospective-students/degree-programs-offered",
+        "https://case.edu/medicine/education/graduate-education/masters-programs",
+        "https://case.edu/admissions/graduate-professional/"
+    ],
+    "University of Tennessee, Knoxville": [
+        "https://gradschool.utk.edu/future-students/degrees-and-programs/",
+        "https://volsonline.utk.edu/programs-degrees/masters-degrees/",
+        "https://cehhs.utk.edu/masters-programs/"
+    ],
+    "University of Hawaii at Manoa": [
+        "https://manoa.hawaii.edu/graduate/graduate-programs/",
+        "https://manoa.hawaii.edu/catalog/graduate/grad-programs/",
+        "https://www.mastersportal.com/universities/13137/university-of-hawaii-at-manoa.html"
+    ],
+    "University of Kansas": [
+        "https://gograd.ku.edu/portal/prog_website",
+        "https://graduate.ku.edu/",
+        "https://catalog.ku.edu/medicine/"
+    ],
+    "University of Utah": [
+        "https://gradschool.utah.edu/degree-programs-and-contacts/index.php",
+        "https://online.utah.edu/graduate-programs/",
+        "https://gradschool.utah.edu/"
+    ],
+    "Tulane University": [
+        "https://catalog.tulane.edu/graduate-degrees-professional-programs/graduate-programs/",
+        "https://tulane.edu/academics/graduate-programs",
+        "https://www.mastersportal.com/universities/12375/tulane-university.html"
+    ],
+    "George Washington University": [
+        "https://graduate.admissions.gwu.edu/programs",
+        "https://graduate.engineering.gwu.edu/masters-programs",
+        "https://www.mastersportal.com/universities/12046/george-washington-university.html"
+    ],
+    "University of South Florida": [
+        "https://www.usf.edu/cbcs/graduate/masters-programs.aspx",
+        "https://www.usf.edu/admissions/graduate/admission-information/explore-programs.aspx",
+        "https://www.usf.edu/arts-sciences/students/graduate/index.aspx"
+    ],
+    "University at Buffalo SUNY": [
+        "https://www.buffalo.edu/grad/explore/about/programs.html",
+        "https://www.buffalo.edu/home/academics/degree_programs.graduate-programs.html",
+        "https://ed.buffalo.edu/academics/masters.html"
+    ],
+    "University of Nebraska-Lincoln": [
+        "https://graduate.unl.edu/academics/programs",
+        "https://graduate.unl.edu/academics",
+        "https://online.unl.edu/programs/masters-degrees/"
+    ],
+    "University of Cincinnati": [
+        "https://www.artsci.uc.edu/programs/masters.html",
+        "https://grad.uc.edu/",
+        "https://business.uc.edu/graduate.html"
+    ],
+    "University of Delaware": [
+        "https://www.udel.edu/academics/colleges/grad/prospective-students/programs/",
+        "https://www.udel.edu/academics/colleges/grad/",
+        "https://www.udel.edu/academics/colleges/grad/prospective-students/programs/online-graduate-programs/"
+    ],
+    "University of Texas Dallas": [
+        "https://graduate-admissions.utdallas.edu/find-your-program/graduate-degrees-offered/",
+        "https://catalog.utdallas.edu/2023/graduate/programs",
+        "https://jindal.utdallas.edu/masters-programs/"
+    ],
+    "University of South Carolina": [
+        "https://sc.edu/study/colleges_schools/graduate_school/index.php",
+        "https://sc.edu/study/colleges_schools/graduate_school/apply/degree_programs-application-requirements/index.php",
+        "https://www.mastersportal.com/universities/11032/university-of-south-carolina.html"
+    ],
+    "University of Kentucky": [
+        "https://gradschool.uky.edu/graduate-programs",
+        "https://gradschool.uky.edu/welcome-university-kentucky",
+        "https://www.mastersportal.com/universities/12341/university-of-kentucky.html"
+    ],
+    "University of Alabama": [
+        "https://graduate.ua.edu/",
+        "https://slate.ua.edu/portal/programs",
+        "https://www.mastersportal.com/universities/11414/the-university-of-alabama.html"
+    ],
+    "University of Missouri": [
+        "https://gradschool.missouri.edu/degree-programs/",
+        "https://gradschool.missouri.edu/degree-programs/degree-programs-search/",
+        "https://gradschool.missouri.edu/current-students/masters/"
+    ],
+    "University of Oklahoma": [
+        "http://www.ou.edu/gradcollege/apply/programs.html",
+        "http://www.ou.edu/price/divisions/graduate-programs/graduate.html",
+        "http://www.ou.edu/checksheets/graduate.html"
+    ],
+    "University of New Mexico": [
+        "https://grad.unm.edu/graduate-programs/degrees-advisors-instructions.html",
+        "https://grad.unm.edu/",
+        "http://online.unm.edu/online-degrees/masters.html"
+    ],
+    "Oregon State University": [
+        "https://gradschool.oregonstate.edu/programs",
+        "https://gradschool.oregonstate.edu/data/programs",
+        "https://ecampus.oregonstate.edu/online-degrees/graduate/"
+    ],
+    "University of Louisville": [
+        "https://catalog.louisville.edu/graduate/programs-study/",
+        "https://louisville.edu/graduate/futurestudents/degree-programs-1/degree-programs",
+        "https://louisville.edu/online/program-finder?program=ma"
+    ],
+    "University of North Texas": [
+        "https://tgs.unt.edu/future-students/graduate-programs",
+        "https://www.mastersportal.com/universities/12198/university-of-north-texas.html"
+    ],
+    "Temple University": [
+        "https://grad.temple.edu/academics/masters-programs",
+        "https://grad.temple.edu/",
+        "https://education.temple.edu/academics/programs/masters-programs"
+    ],
+    "University of Arkansas": [
+        "https://graduate-and-international.uark.edu/graduate/programs-of-study/index.php",
+        "https://catalog.uark.edu/graduatecatalog/programsofstudy/",
+        "https://graduate-and-international.uark.edu/graduate/"
+    ],
+    "University of Mississippi": [
+        "https://catalog.olemiss.edu/graduate-school/programs",
+        "https://education.olemiss.edu/academics/graduate.html",
+        "https://gradschool.olemiss.edu/apply-now/graduate-programs-and-deadlines/"
+    ],
+    "University of Nevada, Las Vegas": [
+        "https://www.unlv.edu/academics/degrees/graduate"
+    ],
+    "University of Vermont": [
+        "https://www.uvm.edu/graduate/programs/degrees_and_deadlines_apply",
+        "https://www.uvm.edu/graduate",
+        "https://www.uvm.edu/academics/majors_minors_and_graduate_programs"
+    ],
+    "University of Rhode Island": [
+        "https://www.uri.edu/programs/graduate-programs/",
+        "https://web.uri.edu/ir/uri-active-masters-programs/",
+        "https://www.uri.edu/programs/"
+    ],
+    "University of Idaho": [
+        "https://www.uidaho.edu/cogs/programs-offered",
+        "https://www.uidaho.edu/admissions/graduate/graduate-programs",
+        "https://catalog.uidaho.edu/colleges-related-units/graduate-studies/masters-degrees/"
+    ],
+    "University of North Carolina, Charlotte": [
+        "https://gradadmissions.charlotte.edu/programs",
+        "https://academics.charlotte.edu/graduate-programs",
+        "https://www.mastersportal.com/universities/12106/the-university-of-north-carolina-at-charlotte.html"
+    ],
+    "University of North Carolina, Greensboro": [
+        "https://www.uncg.edu/academics-support/degrees-programs/",
+        "https://www.mastersportal.com/universities/13596/university-of-north-carolina-greensboro.html",
+        "https://grs.uncg.edu/"
+    ],
+    "University of Central Florida": [
+        "https://www.ucf.edu/masters/",
+        "https://www.ucf.edu/degree-search/master/",
+        "https://www.ucf.edu/online/masters/"
+    ],
+    "Florida State University": [
+        "https://gradschool.fsu.edu/academics-research/degree-programs/masters-degree-programs",
+        "https://gradschool.fsu.edu/academics-research/degree-programs",
+        "https://www.mastersportal.com/universities/11951/florida-state-university.html"
+    ],
+    "Florida International University": [
+        "https://www.fiu.edu/academics/degrees-and-programs/index.html",
+        "https://www.fiu.edu/admissions/graduate-guide/index.html",
+        "https://gradschool.fiu.edu/university-graduate-studies/"
+    ],
+    "San Diego State University": [
+        "https://admissions.sdsu.edu/grad-programs/masters",
+        "https://grad.sdsu.edu/prospective-students/masters-doctoral-programs",
+        "https://admissions.sdsu.edu/grad-programs"
+    ],
+    "Colorado State University": [
+        "https://graduateschool.colostate.edu/programs/",
+        "https://catalog.colostate.edu/general-catalog/graduate-bulletin/graduate-study/masters-degrees/",
+        "https://www.mastersportal.com/universities/11257/colorado-state-university.html"
+    ],
+    "Washington State University": [
+        "https://gradschool.wsu.edu/degrees/",
+        "https://gradschool.wsu.edu/masters-degree/",
+        "https://www.mastersportal.com/universities/11096/washington-state-university.html"
+    ],
+    "Utah State University": [
+        "https://www.usu.edu/degrees-majors/browse/?l=graduate",
+        "https://gradschool.usu.edu/",
+        "https://huntsman.usu.edu/graduate/programs"
+    ],
+    "New Mexico State University": [
+        "https://gradschool.nmsu.edu/future-students/index.html",
+        "https://hest.nmsu.edu/students/graduate-programs.html",
+        "https://catalogs.nmsu.edu/nmsu/graduate-school/"
+    ],
+    "Montana State University": [
+        "https://www.montana.edu/academics/graduate",
+        "https://www.montana.edu/gradschool/",
+        "http://catalog.montana.edu/graduate/"
+    ]
+}
