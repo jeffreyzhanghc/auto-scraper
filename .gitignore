@@ -7,3 +7,4 @@ pyvenv.cfg
 ./gpt-crawler-main/output*
 .DS_Store
 src/*.json
+knowledge_files/*.json
