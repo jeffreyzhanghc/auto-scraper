@@ -121,7 +121,7 @@ async def fetch_all_url(url_sets):
 
 async def get_program_branches(url_file,start_index, batch_size):
     '''
-    By using GPT, the function fecthes the prorgam list url webpage and filter out the program related urls
+    By using GPT, the function fecthes the program list url webpage and filter out the program related urls
     '''
     with open(url_file, 'r') as file:
         data = json.load(file)

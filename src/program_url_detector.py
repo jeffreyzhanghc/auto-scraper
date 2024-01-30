@@ -27,112 +27,6 @@ from tenacity import (
 import logging
 from googlesearch import search
 
-universities = [
-    "Massachusetts Institute of Technology (MIT)",
-    "Stanford University",
-    "Harvard University",
-    "California Institute of Technology (Caltech)",
-    "University of Chicago",
-    "Princeton University",
-    "Cornell University",
-    "Yale University",
-    "Columbia University",
-    "University of Pennsylvania",
-    "University of Michigan",
-    "Johns Hopkins University",
-    "Northwestern University",
-    "University of California, Berkeley",
-    "University of California, Los Angeles (UCLA)",
-    "Duke University",
-    "University of California, San Diego",
-    "Brown University",
-    "University of Wisconsin-Madison",
-    "New York University (NYU)",
-    "University of Texas at Austin",
-    "Carnegie Mellon University",
-    "University of Washington",
-    "University of Illinois at Urbana-Champaign",
-    "University of California, San Francisco",
-    "University of Southern California",
-    "Purdue University",
-    "University of Maryland, College Park",
-    "University of Minnesota",
-    "University of North Carolina, Chapel Hill",
-    "Boston University",
-    "Pennsylvania State University",
-    "Ohio State University",
-    "University of California, Davis",
-    "University of California, Santa Barbara",
-    "University of California, Irvine",
-    "University of Florida",
-    "Rice University",
-    "Michigan State University",
-    "Indiana University Bloomington",
-    "University of Virginia",
-    "University of Colorado Boulder",
-    "Rutgers University-New Brunswick",
-    "Texas A&M University",
-    "Georgia Institute of Technology",
-    "University of Pittsburgh",
-    "Washington University in St. Louis",
-    "University of Rochester",
-    "Vanderbilt University",
-    "University of Notre Dame",
-    "University of Miami",
-    "University of Arizona",
-    "University of Massachusetts Amherst",
-    "University of Connecticut",
-    "Dartmouth College",
-    "Emory University",
-    "University of Georgia",
-    "University of California, Riverside",
-    "University of Iowa",
-    "Virginia Tech",
-    "Georgetown University",
-    "University of Colorado, Denver",
-    "University of Illinois, Chicago",
-    "University of Oregon",
-    "Case Western Reserve University",
-    "University of Tennessee, Knoxville",
-    "University of Hawaii at Manoa",
-    "University of Kansas",
-"University of Utah",
-"Tulane University",
-"George Washington University",
-"University of South Florida",
-"University at Buffalo SUNY",
-"University of Nebraska-Lincoln",
-"University of Cincinnati",
-"University of Delaware",
-"University of Texas Dallas",
-"University of South Carolina",
-"University of Kentucky",
-"University of Alabama",
-"University of Missouri",
-"University of Oklahoma",
-"University of New Mexico",
-"Oregon State University",
-"University of Louisville",
-"University of North Texas",
-"Temple University",
-"University of Arkansas",
-"University of Mississippi",
-"University of Nevada, Las Vegas",
-"University of Vermont",
-"University of Rhode Island",
-"University of Idaho",
-"University of North Carolina, Charlotte",
-"University of North Carolina, Greensboro",
-"University of Central Florida",
-"Florida State University",
-"Florida International University",
-"San Diego State University",
-"Colorado State University",
-"Washington State University",
-"Utah State University",
-"New Mexico State University",
-"Montana State University"
-]
 
 load_dotenv()
 api_key1 = os.getenv("openaikey1")
@@ -175,17 +69,12 @@ async def call_chatgpt_async(session, urls: str):
 
 
 async def call_chatgpt_bulk(url_sets):
-    '''
-    Call chatGPT for all the given prompts in parallel.
-    Input: a list of parsed resume text
-    Output: list of json formatted string
-    '''
     async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets]
         responses = await asyncio.gather(*tasks)
     return responses
 
-def google_program_url(path):
+def google_program_url(path,universities):
     dict = {}
     for university in universities:
         query = f"{university} Master Programs List"
@@ -196,8 +85,8 @@ def google_program_url(path):
     with open(path, 'w', encoding='utf-8') as f:
             json.dump(dict, f, ensure_ascii=False, indent=4)
 
-def _main_(inpath = "/Users/mac/Desktop/auto-scraper/knowledge_files/grad_school_programs_url.json",outpath = "/Users/mac/Desktop/auto-scraper/knowledge_files/gpt_selected_programs_url.json"):
-    google_program_url("/Users/mac/Desktop/auto-scraper/knowledge_files/grad_school_programs_url.json")
+def detect_prorgams(universities,inpath,outpath):
+    google_program_url(inpath,universities)
     with open(inpath, 'r') as file:
         data = json.load(file)
     json_results = []
@@ -212,9 +101,6 @@ def _main_(inpath = "/Users/mac/Desktop/auto-scraper/knowledge_files/grad_school
     
 
 
-
-#------- Run this function to run the script ---------
-_main_()
 
 
 

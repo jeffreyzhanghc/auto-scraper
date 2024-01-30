@@ -81,7 +81,7 @@ async def call_chatgpt_bulk(url_sets):
 
 
 
-def _main_(inpath = "/Users/mac/Desktop/auto-scraper/knowledge_files/grad_school_url.json",outpath = "/Users/mac/Desktop/auto-scraper/knowledge_files/gpt_selected_url.json"):
+def seed_url_detector(inpath = "../knowledge_files/grad_school_url.json",outpath = "../knowledge_files/gpt_selected_url.json"):
     with open(inpath, 'r') as file:
         data = json.load(file)
     json_results = []
@@ -97,6 +97,4 @@ def _main_(inpath = "/Users/mac/Desktop/auto-scraper/knowledge_files/grad_school
 
 
 
-#------- Run this function to run the script ---------
-_main_()
 
