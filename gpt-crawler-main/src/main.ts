@@ -2,7 +2,6 @@
 import { defaultConfig } from "../config.js";
 import { crawl, write } from "./core.js";
 import { v4 as uuidv4 } from 'uuid';
-
 //const uniqueId = uuidv4();
 const id = process.env.school!
 const configJson = process.env.CRAWLER_CONFIG;
