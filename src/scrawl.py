@@ -96,7 +96,7 @@ async def get_info(seed_url,file_name,batch_size,school_name):
     return output
 
 
-async def scrawl(seed_urls,program_urls,results_path,i,batch_size = 3):
+async def scrawl(seed_urls,program_urls,results_path,i,end,batch_size = 3):
     a = {}
     with open(results_path, 'w') as f:
         json.dump(a, f)
@@ -108,9 +108,9 @@ async def scrawl(seed_urls,program_urls,results_path,i,batch_size = 3):
     for element in data:
         schools.append(list(element.keys())[0])
         graduate_urls.append(list(element.values())[0])
+    if end==-1 : end = len(graduate_urls)
 
-
-    while i+batch_size<=len(graduate_urls):
+    while i+batch_size<=end:
         with open(results_path, 'r', encoding='utf-8') as file:
             res = json.load(file)
         gu = graduate_urls[i:i+batch_size]
@@ -138,12 +138,12 @@ async def scrawl(seed_urls,program_urls,results_path,i,batch_size = 3):
         i+=batch_size
 
 
-    if i < len(graduate_urls):
+    if i < end:
         with open(results_path, 'r', encoding='utf-8') as file:
             res = json.load(file)
         gu = graduate_urls[i:]
         sc = schools[i:]
-        tasks = [get_info(url,"output"+str(i)+".json") for url,school,i in zip(gu,sc,range(len(graduate_urls)-i))]
+        tasks = [get_info(url,"output"+str(i)+".json",batch_size,school) for url,school,i in zip(gu,sc,range(end-i))]
         fetched_info = await asyncio.gather(*tasks)
         for j in range(len(sc)):
             res[sc[j]] = {}
