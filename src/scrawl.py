@@ -77,9 +77,11 @@ async def fetch_all_urls(url_list):
 
 async def get_info(seed_url,file_name,batch_size,school_name):
     #update_config(seed_url,file_name)
+    if seed_url[-1]=='/': match = seed_url+'**'
+    else: match = seed_url+'/**'
     config = {
     'url': seed_url,
-    'match': seed_url+'**',
+    'match': match,
     'maxPagesToCrawl': 200,
     'outputFileName': file_name,
     'maxTokens': 2000000
@@ -105,6 +107,7 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
         json.dump(a, f)
     start_time = time.time()
     #find the ending index
+    if i>=end: print("Start Index should be larger than end index")
     if end==-1 : end = len(universities)
     while i+batch_size<=end:
         batch = universities[i:i+batch_size]
