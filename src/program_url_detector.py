@@ -74,25 +74,26 @@ async def call_chatgpt_bulk(url_sets):
         responses = await asyncio.gather(*tasks)
     return responses
 
+
 def google_program_url(path,universities):
     dict = {}
     for university in universities:
         query = f"{university} Master Programs List"
         dict[university] =[]
         for j in search(query,num_results = 1):
-            print(j)
+            print("Collecting Program List page URL for" + str(university)+": "+str(j))
             dict[university].append(j)
     with open(path, 'w', encoding='utf-8') as f:
             json.dump(dict, f, ensure_ascii=False, indent=4)
 
-def detect_prorgams(universities,inpath,outpath):
+async def detect_prorgams(universities,inpath,outpath):
     google_program_url(inpath,universities)
     with open(inpath, 'r') as file:
         data = json.load(file)
     json_results = []
     keys = list(data.keys())
     schools = [{key:data[key]} for key in keys]
-    results = asyncio.run(call_chatgpt_bulk(schools))
+    results = await call_chatgpt_bulk(schools)
     for res in results:
         json_results.append(json.loads(res))
     with open(outpath, 'w', encoding='utf-8') as f:

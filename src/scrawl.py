@@ -13,6 +13,9 @@ from program_page_handler import get_program_branches
 from asyncio import Semaphore
 import datetime
 import os
+from collect_seed_url import collect_seed_url
+from seed_url_detector import seed_url_detector
+from program_url_detector import detect_prorgams
 
 def filter_url(file:str):
     '''
@@ -96,29 +99,32 @@ async def get_info(seed_url,file_name,batch_size,school_name):
     return output
 
 
-async def scrawl(seed_urls,program_urls,results_path,i,end,batch_size = 3):
+async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,results_path,i,end,batch_size = 3):
     a = {}
     with open(results_path, 'w') as f:
         json.dump(a, f)
     start_time = time.time()
-    with open(seed_urls, 'r') as file:
-        data = json.load(file)
-    schools = []
-    graduate_urls = []
-    for element in data:
-        schools.append(list(element.keys())[0])
-        graduate_urls.append(list(element.values())[0])
-    if end==-1 : end = len(graduate_urls)
-
+    #find the ending index
+    if end==-1 : end = len(universities)
     while i+batch_size<=end:
+        batch = universities[i:i+batch_size]
+        collect_seed_url(seed_urls,batch)
+        await seed_url_detector(seed_urls,gpt_selected_seed_urls)
+        with open(gpt_selected_seed_urls, 'r') as file:
+            data = json.load(file)
+        sc = []
+        gu = []
+        for element in data:
+            sc.append(list(element.keys())[0])
+            gu.append(list(element.values())[0])
+        await detect_prorgams(batch,program_urls,gpt_selected_program_urls)
+
         with open(results_path, 'r', encoding='utf-8') as file:
             res = json.load(file)
-        gu = graduate_urls[i:i+batch_size]
-        sc = schools[i:i+batch_size]
         tasks = [get_info(url,"output"+str(j)+".json",batch_size,school) for url,school,j in zip(gu,sc,range(batch_size))]
         fetched_info = await asyncio.gather(*tasks)
-        program_branches = await get_program_branches(program_urls,i,batch_size)
-        for j in range(len(sc)):
+        program_branches = await get_program_branches(program_urls)
+        for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
             res[sc[j]]['Date_fetched'] = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -139,17 +145,33 @@ async def scrawl(seed_urls,program_urls,results_path,i,end,batch_size = 3):
 
 
     if i < end:
+        batch = universities[i:]
+        collect_seed_url(seed_urls,batch)
+        seed_url_detector(seed_urls,gpt_selected_seed_urls)
+        with open(gpt_selected_seed_urls, 'r') as file:
+            data = json.load(file)
+        sc = []
+        gu = []
+        for element in data:
+            sc.append(list(element.keys())[0])
+            gu.append(list(element.values())[0])
+        detect_prorgams(batch,program_urls,gpt_selected_program_urls)
         with open(results_path, 'r', encoding='utf-8') as file:
             res = json.load(file)
-        gu = graduate_urls[i:]
-        sc = schools[i:]
         tasks = [get_info(url,"output"+str(i)+".json",batch_size,school) for url,school,i in zip(gu,sc,range(end-i))]
         fetched_info = await asyncio.gather(*tasks)
-        for j in range(len(sc)):
+        program_branches = await get_program_branches(program_urls)
+        for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
+            res[sc[j]]['Date_fetched'] = datetime.datetime.now().strftime('%Y-%m-%d')
             res[sc[j]]['graduate']['general_info'] = fetched_info[j]
-            res[sc[j]]['graduate']['program_info'] = {}
+            if program_branches[j]:
+                tasks = [simple_fetch(url) for url in program_branches[j]]
+                program_info = await asyncio.gather(*tasks)
+                res[sc[j]]['graduate']['program_info'] = program_info
+            else:
+                res[sc[j]]['graduate']['program_info'] = None
 
 
         

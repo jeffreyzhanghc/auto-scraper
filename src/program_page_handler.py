@@ -119,7 +119,7 @@ async def fetch_all_url(url_sets):
         responses = await asyncio.gather(*tasks)
     return responses
 
-async def get_program_branches(url_file,start_index, batch_size):
+async def get_program_branches(url_file):
     '''
     By using GPT, the function fecthes the program list url webpage and filter out the program related urls
     '''
@@ -129,7 +129,7 @@ async def get_program_branches(url_file,start_index, batch_size):
     program_urls = []
     for school in schools:
         program_urls.append(data[school][0])   
-    all_links = await fetch_all_url(program_urls[start_index:start_index+batch_size])
+    all_links = await fetch_all_url(program_urls)
     results = await call_chatgpt_bulk(all_links)
     return results
     

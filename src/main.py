@@ -125,9 +125,6 @@ i = int(os.getenv('start_index'))
 end = int(os.getenv('end_index'))
 batch_size = int(os.getenv('batch_size'))
 #call functions
-collect_seed_url(seed_urls,universities)
-seed_url_detector(seed_urls,gpt_selected_seed_urls)
-detect_prorgams(universities,program_urls,gpt_selected_program_urls)
-asyncio.run(scrawl(gpt_selected_seed_urls,program_urls,final_output_path,i,end,batch_size))
+asyncio.run(scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,final_output_path,i,end,batch_size))
 
 

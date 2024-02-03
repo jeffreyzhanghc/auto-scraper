@@ -81,13 +81,14 @@ async def call_chatgpt_bulk(url_sets):
 
 
 
-def seed_url_detector(inpath = "../knowledge_files/grad_school_url.json",outpath = "../knowledge_files/gpt_selected_url.json"):
+async def seed_url_detector(inpath,outpath):
+
     with open(inpath, 'r') as file:
         data = json.load(file)
     json_results = []
     keys = list(data.keys())
     schools = [{key:data[key]} for key in keys]
-    results = asyncio.run(call_chatgpt_bulk(schools))
+    results = await call_chatgpt_bulk(schools)
     for res in results:
         json_results.append(json.loads(res))
     with open(outpath, 'w', encoding='utf-8') as f:
