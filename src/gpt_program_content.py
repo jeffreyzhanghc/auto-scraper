@@ -1,7 +1,5 @@
-import sys
-#must be python 3.11 or above to use some of the library
-print(sys.version)
-
+from trafilatura import fetch_url, extract
+from playwright.async_api import async_playwright
 import re
 import os
 import openai
@@ -31,19 +29,20 @@ load_dotenv()
 api_key1 = os.getenv("openaikey1")
 api_key = api_key1
 
-logger = logging.getLogger(__name__)
+
+llogger = logging.getLogger(__name__)
 @retry(wait=wait_random_exponential(min=1, max=60), 
        stop=stop_after_attempt(9), 
-       retry=retry_if_exception_type(Exception),
-       before=before_log(logger, logging.DEBUG), 
-       after=after_log(logger, logging.DEBUG))
-async def call_chatgpt_async(session, urls: str):
+       retry=retry_if_exception_type(Exception))
+async def call_chatgpt_async(session, url: str):
     prompt = f"""
-            '''{urls}'''
-            given the json information containing the school name as the key and three url as value, determine which url you think is most 
-            likely the url entry for entering this schools' graduate admission homepage. By homepage I mean the seed url that I can start from 
-            it to scrape the admission information following the seed url. Think deliberately and accurately return results in JSON format, keep the 
-            university name as the key and choose only ONE url for each university as its graduate admission homepage 
+            '''{url}'''
+            Given the entry link of a school program, use your knowledge to accurately identify the prorgam name and the degreee offered, and return
+            in JSON format where the name of the program is the property, and the value of the property is None.
+            for example:
+            "https://gradschool.cornell.edu/academics/fields-of-study/subject/africana-studies/africana-studies-phd-ithaca"
+            you should return: {{"Africana Studies Ph.D": None}}
+
 
             """
     payload = {
@@ -65,36 +64,37 @@ async def call_chatgpt_async(session, urls: str):
             print(f"OpenAI request failed with error {response['error']}")
         return response['choices'][0]['message']['content']
     except:
-        print("Request failed.")
+        print("GPT program Summrization: Request failed.")
 
 
-async def call_chatgpt_bulk(url_sets):
+async def summarize_info(info_sets):
     '''
     Call chatGPT for all the given prompts in parallel.
     Input: a list of parsed resume text
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets]
+        tasks = [tg.create_task(call_chatgpt_async(session, info)) for info in info_sets]
         responses = await asyncio.gather(*tasks)
     return responses
 
 
 
-async def seed_url_detector(inpath,outpath):
+async def get_prorgam_name(program_info,outpath):
+    urls = []
+    for element in program_info:
+        urls.append(element[0])
+    res = await summarize_info(urls)
+    json_res = []
+    for i in range(len(res)):
+        if res[i] != None:
+            json_res.append(json.loads(res[i]))
+        else:
+            print("GPT fails to extract name from link:"+ urls[i])
+    with open(outpath, 'w') as f:
+            json.dump(json_res, f,ensure_ascii=False, indent=4)
 
-    with open(inpath, 'r') as file:
-        data = json.load(file)
-    json_results = []
-    keys = list(data.keys())
-    schools = [{key:data[key]} for key in keys]
-    results = await call_chatgpt_bulk(schools)
-    for res in results:
-        json_results.append(json.loads(res))
-    with open(outpath, 'w', encoding='utf-8') as f:
-        json.dump(json_results, f, ensure_ascii=False, indent=4)
 
-    
 
 
 

@@ -25,6 +25,7 @@ from tenacity import (
 import logging
 
 
+
 load_dotenv()
 api_key1 = os.getenv("openaikey1")
 api_key = api_key1
@@ -43,7 +44,7 @@ async def call_chatgpt_async(session, links: list):
             '''{links}'''
             Given the list of url, select the urls that you think are related to a specific graduate study program. The urls should indicate
             a specific field of study, return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
-            value. Try to make the decision fast and efficiently with accuracy. 
+            value. Try to make the decision fast and efficiently with accuracy. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
             """
     payload = {
         'model': "gpt-4-1106-preview",
@@ -73,10 +74,22 @@ async def call_chatgpt_bulk(url_sets):
     Input: a list of parsed resume text
     Output: list of json formatted string
     '''
-    async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets]
-        responses = await asyncio.gather(*tasks)
-    return responses
+    async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
+        idx = len(url_sets)//6
+        tasks1 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[:idx]]
+        tasks2 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[idx:2*idx]]
+        tasks3 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[2*idx:3*idx]]
+        tasks4 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[3*idx:4*idx]]
+        tasks5 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[4*idx:5*idx]]
+        tasks6 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[5*idx:]]
+        responses1 = await asyncio.gather(*tasks1)
+        responses2 = await asyncio.gather(*tasks2)
+        responses3 = await asyncio.gather(*tasks3)
+        responses4 = await asyncio.gather(*tasks4)
+        responses5 = await asyncio.gather(*tasks5)
+        responses6 = await asyncio.gather(*tasks6)
+        response = responses1+responses2+responses3+responses4+responses5+responses6
+    return response
 
 
 
@@ -114,7 +127,7 @@ async def fetch_all_url(url_sets):
     '''
     Given the page urls, the funciton asynchronously extract all urls on all pages
     '''
-    async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
+    async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(fetch_with_playwright(url)) for url in url_sets]
         responses = await asyncio.gather(*tasks)
     return responses
@@ -125,12 +138,13 @@ async def get_program_branches(url_file):
     '''
     with open(url_file, 'r') as file:
         data = json.load(file)
-    schools = list(data.keys())
     program_urls = []
-    for school in schools:
-        program_urls.append(data[school][0])   
+    for element in data:
+        url = list(element.values())[0]
+        program_urls.append(url)
+        print("program main entry starts from this:",url) 
     all_links = await fetch_all_url(program_urls)
     results = await call_chatgpt_bulk(all_links)
-    return results
+    return (results,program_urls)
     
     

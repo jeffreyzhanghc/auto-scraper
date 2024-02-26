@@ -41,10 +41,21 @@ logger = logging.getLogger(__name__)
 async def call_chatgpt_async(session, urls: str):
     prompt = f"""
             '''{urls}'''
-            given the json information containing the school name as the key and three url as value, determine which url you think is most 
-            likely the url entry for entering this schools' graduate program list. Think deliberately and accurately return results in JSON format, keep the 
-            university name as the key and choose only ONE url for each university as the most proper entry point for finding school's graduate program lists
+            Given the json information containing the school name as the key and three urls as value, help me determine whcih url is the webpage that contains
+            list of program of studies of that university.
 
+            For example, for Cornell University the google search results are:
+            "https://gradschool.cornell.edu/admissions/degrees-fields/cugradfos/",
+            "https://gradschool.cornell.edu/admissions/degrees-fields/graduate-school-degrees/",
+            "https://gradschool.cornell.edu/admissions/degrees-fields/"
+            the desired outcome for this "https://gradschool.cornell.edu/admissions/degrees-fields/cugradfos/" because this page contains the full list of the programs
+
+            
+            Think deliberately and accurately return results in JSON format, which contains each university name as property and the corresponding chosen
+            url for program entry page as the value. Use dictionary to store the properties, DO NOT use list bracket AT ALL.
+            Example output:
+            {{"Cornell University:"https://gradschool.cornell.edu/admissions/degrees-fields/cugradfos/",
+            "Yale University:"https://gsas.yale.edu/programs-of-study"}}
             """
     payload = {
         'model': "gpt-4-1106-preview",
@@ -69,7 +80,7 @@ async def call_chatgpt_async(session, urls: str):
 
 
 async def call_chatgpt_bulk(url_sets):
-    async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
+    async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets]
         responses = await asyncio.gather(*tasks)
     return responses
@@ -78,7 +89,7 @@ async def call_chatgpt_bulk(url_sets):
 def google_program_url(path,universities):
     dict = {}
     for university in universities:
-        query = f"{university} Master Programs List"
+        query = f"{university} Graduate Programs List"
         dict[university] =[]
         for j in search(query,num_results = 1):
             print("Collecting Program List page URL for" + str(university)+": "+str(j))

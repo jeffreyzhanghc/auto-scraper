@@ -16,6 +16,9 @@ import os
 from collect_seed_url import collect_seed_url
 from seed_url_detector import seed_url_detector
 from program_url_detector import detect_prorgams
+from gpt_program_content import get_prorgam_name
+from google_search import get_program_info
+from compress import batch_compress
 
 def filter_url(file:str):
     '''
@@ -59,10 +62,12 @@ async def simple_fetch(url):
     Simple fetch using trafilatura library to get the url
     '''
     try:
+
+    
         downloaded = fetch_url(url)
         text = extract(downloaded,include_links= True)
         date = str(metadata.extract_metadata(downloaded).date)
-        return (text,date)
+        return (url,text,date)
 
     except Exception as e:
         print(f"Error fetching content from {url}: {e}")
@@ -93,21 +98,21 @@ async def get_info(seed_url,file_name,batch_size,school_name):
     text_set = await fetch_all_urls(url_list)
     for i in range(len(output)):
         if text_set[i]:
-            output[i]['content'] = text_set[i][0]
-            output[i]['date_updated'] = text_set[i][1]
+            output[i]['content'] = text_set[i][1]
+            output[i]['date_updated'] = text_set[i][2]
         else:
             output[i]['content'] = None
             output[i]['date_updated'] = None
     return output
 
 
-async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,results_path,i,end,batch_size = 3):
+async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,program_name_storage,results_path,i,end,batch_size = 3):
     a = {}
     with open(results_path, 'w') as f:
         json.dump(a, f)
     start_time = time.time()
     #find the ending index
-    if i>=end: print("Start Index should be larger than end index")
+    if end!=-1 and i>=end: print("Start Index should be larger than end index")
     if end==-1 : end = len(universities)
     while i+batch_size<=end:
         batch = universities[i:i+batch_size]
@@ -126,7 +131,7 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res = json.load(file)
         tasks = [get_info(url,"output"+str(j)+".json",batch_size,school) for url,school,j in zip(gu,sc,range(batch_size))]
         fetched_info = await asyncio.gather(*tasks)
-        program_branches = await get_program_branches(program_urls)
+        program_branches,entry_pages = await get_program_branches(gpt_selected_program_urls)
         for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
@@ -135,9 +140,25 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             if program_branches[j]:
                 tasks = [simple_fetch(url) for url in program_branches[j]]
                 program_info = await asyncio.gather(*tasks)
+                res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
+                print("fetching dimension metrics...")
+                await get_prorgam_name(program_info,program_name_storage)
+                _metrics = await get_program_info(sc[j],program_name_storage)
+                current_program_names = list(_metrics.keys())
+                print(current_program_names)
+                ##notice the order of the program names
+                processed_metrics = await batch_compress(_metrics,current_program_names)
+                for k in range(len(current_program_names)):
+                    _metrics[current_program_names[k]] = processed_metrics[k]
+                res[sc[j]]['graduate']['metrics'] = _metrics                
+
+
+
             else:
+                res[sc[j]]['graduate']['programs_main_entry'] = None
                 res[sc[j]]['graduate']['program_info'] = None
+                res[sc[j]]['graduate']['metircs'] = None
         #update json
         with open(results_path, 'w', encoding='utf-8') as file:
             json.dump(res, file, ensure_ascii=False, indent=4)
@@ -163,7 +184,7 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res = json.load(file)
         tasks = [get_info(url,"output"+str(i)+".json",batch_size,school) for url,school,i in zip(gu,sc,range(end-i))]
         fetched_info = await asyncio.gather(*tasks)
-        program_branches = await get_program_branches(program_urls)
+        program_branches,entry_pages = await get_program_branches(gpt_selected_program_urls)
         for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
@@ -172,9 +193,22 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             if program_branches[j]:
                 tasks = [simple_fetch(url) for url in program_branches[j]]
                 program_info = await asyncio.gather(*tasks)
+                res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
+                print("fetching dimension metrics...")
+                await get_prorgam_name(program_info,program_name_storage)
+                _metrics = await get_program_info(sc[j],program_name_storage)
+                current_program_names = list(_metrics.keys())
+                print(current_program_names)
+                ##notice the order of the program names
+                processed_metrics = await batch_compress(_metrics,sc[j],current_program_names)
+                for k in range(len(current_program_names)):
+                    _metrics[current_program_names[k]] = processed_metrics[k]
+                res[sc[j]]['graduate']['metrics'] = _metrics
             else:
+                res[sc[j]]['graduate']['programs_main_entry'] = None
                 res[sc[j]]['graduate']['program_info'] = None
+                res[sc[j]]['graduate']['metrics'] = None
 
 
         

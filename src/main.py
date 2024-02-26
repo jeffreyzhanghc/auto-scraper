@@ -61,6 +61,7 @@ universities = [
     "Vanderbilt University",
     "University of Notre Dame",
     "University of Miami",
+    "The University of Alabama"
     "University of Arizona",
     "University of Massachusetts Amherst",
     "University of Connecticut",
@@ -124,7 +125,8 @@ final_output_path = os.getenv("final_output_path")
 i = int(os.getenv('start_index'))
 end = int(os.getenv('end_index'))
 batch_size = int(os.getenv('batch_size'))
+program_name_storage = os.getenv('program_name_storage')
 #call functions
-asyncio.run(scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,final_output_path,i,end,batch_size))
+asyncio.run(scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,program_name_storage,final_output_path,i,end,batch_size))
 
 
