@@ -63,6 +63,10 @@ start_index = 0
 end_index = -1
 #number of universities scrawling each time, suggesting 2-5
 batch_size = 2
+#place to store program name
+program_name_storage = "../knowledge_files/program_name_list.json"
+#your serper key for google search
+serperkey = "YOUR KEY"
 ```
 
 #### Run your scripts

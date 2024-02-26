@@ -59,6 +59,8 @@ async def compress_metric(raw_metrics,program_name):
     
     link_name_map = {}
     for name in metric_name:
+        q[name]['originalText'] = []
+        q[name]['compressedText'] = []
         if q[name]['link'] not in link_name_map:
             link = q[name]['link']
             link_name_map[link] = []
@@ -72,12 +74,12 @@ async def compress_metric(raw_metrics,program_name):
         if text == None:
             print("Trafilatura failed to fetch context: "+link)
             for name in names:
-                q[name]['originalText'] = None
-                q[name]['compressedText'] = None
+                q[name]['originalText'].append(None)
+                q[name]['compressedText'].append(None)
 
             continue
         for name in names:
-            q[name]['originalText'] = text
+            q[name]['originalText'].append(text)
         nlp = English()
         nlp.add_pipe('sentencizer')
 
@@ -89,7 +91,7 @@ async def compress_metric(raw_metrics,program_name):
             keywords = []
             keywords = name_to_keywords[name]
             relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence.lower() for keyword in keywords)]
-            q[name]['compressedText'] = relevant_sentences
+            q[name]['compressedText'].append(relevant_sentences)
     return q
 
 async def batch_compress(raw_metrics,program_names):
