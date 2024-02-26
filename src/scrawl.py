@@ -146,7 +146,6 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 await get_prorgam_name(program_info,program_name_storage)
                 _metrics = await get_program_info(sc[j],program_name_storage)
                 current_program_names = list(_metrics.keys())
-                print(current_program_names)
                 ##notice the order of the program names
                 processed_metrics = await batch_compress(_metrics,current_program_names)
                 for k in range(len(current_program_names)):
