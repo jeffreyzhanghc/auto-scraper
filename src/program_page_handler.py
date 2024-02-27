@@ -146,10 +146,6 @@ async def get_program_branches(url_file):
     all_links = await fetch_all_url(program_urls)
     
     results = await call_chatgpt_bulk(all_links)
-    show = []
-    for l in all_links:
-        if l not in results:
-            show.append(l)
     return (results,program_urls)
 
 

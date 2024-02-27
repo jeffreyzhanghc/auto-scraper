@@ -99,15 +99,7 @@ async def batch_compress(raw_metrics,program_names):
     responses = await asyncio.gather(*task)
     return responses
 
-with open("grad_info2.json", 'r') as file:
-    data = json.load(file)["Massachusetts Institute of Technology (MIT)"]['graduate']['metrics']
-names = list(data.keys())
 
-x = {'Chemistry Program':data['Chemistry Program']}
-names = list(x.keys())
-r = asyncio.run(batch_compress(x,names))
-with open("sample.json", 'w') as file:
-    data = json.dump(r,file,ensure_ascii=False, indent=4)
 
 
 
