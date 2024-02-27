@@ -39,9 +39,10 @@ async def call_chatgpt_async(session, url: str):
             '''{url}'''
             Given the entry link of a school program, use your knowledge to accurately identify the prorgam name and the degreee offered, and return
             in JSON format where the name of the program is the property, and the value of the property is None.
+            For program name, be specific about Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D.
             for example:
-            "https://gradschool.cornell.edu/academics/fields-of-study/subject/africana-studies/africana-studies-phd-ithaca"
-            you should return: {{"Africana Studies Ph.D": None}}
+            Given "https://oge.mit.edu/programs/aeronautics-and-astronautics/"
+            you should return: {{"Master of Science in Aeronautics and Astronautics (SM)": None}}
 
 
             """
@@ -93,6 +94,8 @@ async def get_prorgam_name(program_info,outpath):
             print("GPT fails to extract name from link:"+ urls[i])
     with open(outpath, 'w') as f:
             json.dump(json_res, f,ensure_ascii=False, indent=4)
+
+
 
 
 

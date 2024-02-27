@@ -47,29 +47,30 @@ async def simple_fetch(url):
         return None  # Return None or some error indicator
     
 async def compress_metric(raw_metrics,program_name):
-    name_to_keywords = {"Deadline":['deadline', 'application due', 'due', 'date',"submitted by"], \
-                        "GRERequirement":['GRE',"Graduate Record Examination", "test scores"],\
-                        "TOFELRequirement":['TOFEL',"IELTS","English Proficiency"],\
-                        "prerequisiteCourse":['course requirement',"'course requirements","courses like","courses in"],\
-                        "essay/thesisRequirement":["statement","statement of purpose","purpose","personal history statement","essay"],\
+    name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submitted by"], \
+                        "GRERequirement":['gre',"graduate record examination", "test scores"],\
+                        "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
+                        "prerequisiteCourse":['course requirement',"'course","courses like","courses in"],\
                         "applicationFee":['payment','$',"credit card","fee"],\
                         "recommendations":["recommendation","letters of recommendation"],}
     q = raw_metrics[program_name]
     metric_name = list(q.keys())
     
     link_name_map = {}
+    special_link = ""
     for name in metric_name:
         q[name]['originalText'] = []
         q[name]['compressedText'] = []
-        if q[name]['link'] not in link_name_map:
-            link = q[name]['link']
+        link = q[name]['link']
+        if link not in link_name_map:
             link_name_map[link] = []
             link_name_map[link].append(name)
+            continue
         else:
             link_name_map[link].append(name)
     for link,names in link_name_map.items():
-        if 'admission' in link:
-            names = metric_name
+        if "admission" in link:
+            special_link = link
         text = await simple_fetch(link)
         if text == None:
             print("Trafilatura failed to fetch context: "+link)
@@ -86,10 +87,9 @@ async def compress_metric(raw_metrics,program_name):
         doc = nlp(text)
 
         sentences = [sent.text.strip() for sent in doc.sents]
-
+        
         for name in names:
-            keywords = []
-            keywords = name_to_keywords[name]
+            keywords = name_to_keywords[name]        
             relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence.lower() for keyword in keywords)]
             q[name]['compressedText'].append(relevant_sentences)
     return q
@@ -99,8 +99,15 @@ async def batch_compress(raw_metrics,program_names):
     responses = await asyncio.gather(*task)
     return responses
 
-print(asyncio.run(simple_fetch("https://orc.mit.edu/academics/phd-operations-research")))
+with open("grad_info2.json", 'r') as file:
+    data = json.load(file)["Massachusetts Institute of Technology (MIT)"]['graduate']['metrics']
+names = list(data.keys())
 
+x = {'Chemistry Program':data['Chemistry Program']}
+names = list(x.keys())
+r = asyncio.run(batch_compress(x,names))
+with open("sample.json", 'w') as file:
+    data = json.dump(r,file,ensure_ascii=False, indent=4)
 
 
 

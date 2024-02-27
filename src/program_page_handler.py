@@ -42,8 +42,8 @@ async def call_chatgpt_async(session, links: list):
     '''
     prompt = f"""
             '''{links}'''
-            Given the list of url, select the urls that you think are related to a specific graduate study program. The urls should indicate
-            a specific field of study, return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
+            Given the list of url, select the urls that you think are related to a specific master study program. The urls should indicate
+            a specific field of study. return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
             value. Try to make the decision fast and efficiently with accuracy. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
             """
     payload = {
@@ -144,7 +144,12 @@ async def get_program_branches(url_file):
         program_urls.append(url)
         print("program main entry starts from this:",url) 
     all_links = await fetch_all_url(program_urls)
+    
     results = await call_chatgpt_bulk(all_links)
+    show = []
+    for l in all_links:
+        if l not in results:
+            show.append(l)
     return (results,program_urls)
-    
-    
+
+
