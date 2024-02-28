@@ -1,4 +1,4 @@
-from trafilatura import fetch_url, extract
+from trafilatura import fetch_url, extract,bare_extraction,metadata
 from playwright.async_api import async_playwright
 import re
 import os
