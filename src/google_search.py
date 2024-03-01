@@ -29,9 +29,6 @@ async def serper_search(queries):
   },
   {
     "q": queries[4]
-  },
-  {
-    "q": queries[5]
   }
 ])
     headers = {
@@ -46,15 +43,15 @@ async def serper_search(queries):
 
 async def get_program_info(school_name,name_list):
     res = {}
-    metrics= ["Deadline","TOEFL/IELTS test score requirement","GRE test score requirement","prerequisite course","application fee","letters of recommendations"]
-    metric_name = ["Deadline","TOEFLRequirement","GRERequirement","prerequisiteCourse","applicationFee","recommendations"]
+    metrics= ["Deadline","TOEFL/IELTS test score requirement","GRE test score requirement","prerequisite course","letters of recommendations"]
+    metric_name = ["Deadline","TOEFLRequirement","GRERequirement","prerequisiteCourse","recommendations"]
     with open(name_list, 'r') as file:
         data = json.load(file)
     program_names = []
     for dat in data:
         program_names.append(list(dat.keys())[0])
     program_names = list(set(program_names))
-    for name in program_names:
+    for name in program_names[:3]:
         if name not in res:
             res[name] = {}
             queries = []

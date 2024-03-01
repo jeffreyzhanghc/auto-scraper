@@ -142,7 +142,7 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 program_info = await asyncio.gather(*tasks)
                 res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
-                print("fetching dimension metrics...")
+                print("fetching dimension metrics for "+sc[j]+"...")
                 await get_prorgam_name(program_info,program_name_storage)
                 _metrics = await get_program_info(sc[j],program_name_storage)
                 current_program_names = list(_metrics.keys())

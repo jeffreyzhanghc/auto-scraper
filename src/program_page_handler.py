@@ -143,8 +143,8 @@ async def get_program_branches(url_file):
         url = list(element.values())[0]
         program_urls.append(url)
         print("program main entry starts from this:",url) 
-    all_links = await fetch_all_url(program_urls)
     
+    all_links = await fetch_all_url(program_urls)
     results = await call_chatgpt_bulk(all_links)
     return (results,program_urls)
 
