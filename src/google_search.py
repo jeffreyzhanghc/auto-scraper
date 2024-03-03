@@ -51,7 +51,7 @@ async def get_program_info(school_name,name_list):
     for dat in data:
         program_names.append(list(dat.keys())[0])
     program_names = list(set(program_names))
-    for name in program_names[:3]:
+    for name in program_names:
         if name not in res:
             res[name] = {}
             queries = []
