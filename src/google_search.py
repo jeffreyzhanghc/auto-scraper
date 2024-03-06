@@ -43,7 +43,7 @@ async def serper_search(queries):
 
 async def get_program_info(school_name,name_list):
     res = {}
-    metrics= ["Deadline","TOEFL/IELTS test score requirement","GRE test score requirement","prerequisite course","letters of recommendations"]
+    metrics= ["application deadline","TOEFL/IELTS test score requirement","GRE test score requirement","application requirements","letters of recommendations"]
     metric_name = ["Deadline","TOEFLRequirement","GRERequirement","prerequisiteCourse","recommendations"]
     with open(name_list, 'r') as file:
         data = json.load(file)

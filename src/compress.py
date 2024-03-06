@@ -26,12 +26,60 @@ import logging
 import spacy
 from spacy.lang.en import English
 import html_text
+import nltk
+from gensim.models import KeyedVectors
+from nltk.tokenize import sent_tokenize
+import numpy as np
+import gensim.downloader as api
 
 
 
 load_dotenv()
 api_key1 = os.getenv("openaikey1")
 api_key = api_key1
+
+#nltk.download('punkt')
+#model = api.load('word2vec-google-news-300')
+model_path = "word2vec-google-news-300.bin"
+#model.save_word2vec_format(model_path, binary=True)
+
+model = KeyedVectors.load_word2vec_format(model_path, binary=True)
+
+
+# Function to vectorize a sentence based on the word vectors
+def sentence_vector(sentence,model):
+    words = nltk.word_tokenize(sentence)
+    word_vectors = [model[word] for word in words if word in model]
+    return np.mean(word_vectors, axis=0) if word_vectors else np.zeros(model.vector_size)
+
+# Compute cosine similarity between keyword vectors and each sentence vector
+def cosine_similarity(v1, v2):
+    norm1 = np.linalg.norm(v1)
+    norm2 = np.linalg.norm(v2)
+    if norm1 > 0 and norm2 > 0:
+        return np.dot(v1, v2) / (norm1 * norm2)
+    else:
+        return 0
+    
+async def normal_compress(sentences,keywords):
+    relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence.lower() for keyword in keywords)]
+    return relevant_sentences
+        
+
+
+async def special_compress(sentences,keywords,threshold,model=model):
+    # Vectorize keywords and sentences
+    keyword_vectors = np.mean([sentence_vector(keyword,model) for keyword in keywords], axis=0)
+    sentence_vectors = np.array([sentence_vector(sentence,model) for sentence in sentences])
+
+    # Apply a threshold to determine if a sentence is related to the keywords
+    related_sentences = []
+
+    for sentence, vector in zip(sentences, sentence_vectors):
+        sim = cosine_similarity(keyword_vectors, vector)
+        if sim > threshold:
+            related_sentences.append(sentence)
+    return related_sentences
 
 
 async def simple_fetch(url):
@@ -51,7 +99,11 @@ async def simple_fetch_with_playwright(url):
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         page = await browser.new_page()
-        await page.goto(url)
+        try:
+            await page.goto(url, timeout=10000)  # Timeout after 10 seconds
+        except:
+            print("Error: Timeout while loading the page using playwright: "+url)
+            return await simple_fetch(url)
         # Add logic here to wait for the elements you need to ensure they are loaded
         content = await page.content()  # Gets the full page HTML
         # Process the content as needed
@@ -62,10 +114,11 @@ async def simple_fetch_with_playwright(url):
 
     
 async def compress_metric(raw_metrics,program_name):
+    
     name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submit material","material submitted"], \
-                        "GRERequirement":['gre',"graduate record examination", "test scores","gmat"],\
+                        "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
                         "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
-                        "prerequisiteCourse":['course requirement',"'course","courses like","courses in","require"],\
+                        "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","coursework preparation","following areas"],\
                         "recommendations":["recommendation","letters of recommendation"],}
     q = raw_metrics[program_name]
     metric_name = list(q.keys())
@@ -97,11 +150,19 @@ async def compress_metric(raw_metrics,program_name):
         doc = nlp(text)
 
         sentences = [sent.text.strip() for sent in doc.sents]
-        
         for name in names:
-            keywords = name_to_keywords[name]        
-            relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence.lower() for keyword in keywords)]
-            q[name]['compressedText'].append(relevant_sentences)
+                keywords = name_to_keywords[name]        
+                if name == "prerequisiteCourse":
+                    relevant_sentences = await special_compress(sentences,keywords,0.63,model)
+                elif name == "GRERequirement":
+                    relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence for keyword in keywords)]
+                else:
+                    relevant_sentences = await normal_compress(sentences,keywords)
+                q[name]['compressedText'].append(relevant_sentences)
+        
+
+
+
     return q
 
 async def batch_compress(raw_metrics,program_names):
@@ -112,18 +173,6 @@ async def batch_compress(raw_metrics,program_names):
 
 
 
-'''
-#print(asyncio.run(simple_fetch2("https://graduate.auburn.edu/prospective-students/general-admission-requirements/")))
-k =asyncio.run(simple_fetch_with_playwright("https://www.cc.gatech.edu/ms-computer-science-admission-requirements"))
-k = k
-nlp = English()
-nlp.add_pipe('sentencizer')
-doc = nlp(k)
-key = ['deadline', 'application due','application deadline', 'due', 'date',"submitted by"]
-sentences = [sent.text.strip() for sent in doc.sents]
-relevant_sentenceks = [sentence for sentence in sentences if any(keyword in sentence.lower() for keyword in key)]
-print(sentences[:5])
-'''
 
 
 

@@ -5,6 +5,7 @@ src/include/
 __pycache__/
 pyvenv.cfg
 ./gpt-crawler-main/output*
+src/word2vec-google-news-300.bin
 
 !./gpt-crawler-main/package-lock.json
 !./gpt-crawler-main/package.json

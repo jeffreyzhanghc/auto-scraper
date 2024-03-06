@@ -7,7 +7,6 @@ from dotenv import load_dotenv, find_dotenv
 #import newspaper
 import asyncio
 import time
-from playwright.async_api import async_playwright
 import logging
 from program_page_handler import get_program_branches
 from asyncio import Semaphore
