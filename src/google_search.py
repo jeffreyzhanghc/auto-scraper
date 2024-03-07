@@ -43,7 +43,7 @@ async def serper_search(queries):
 
 async def get_program_info(school_name,name_list):
     res = {}
-    metrics= ["application deadline","TOEFL/IELTS test score requirement","GRE test score requirement","application requirements","letters of recommendations"]
+    metrics= ["application deadline","TOEFL/IELTS test score requirement","GRE test score requirement","admission requirements","letters of recommendations"]
     metric_name = ["Deadline","TOEFLRequirement","GRERequirement","prerequisiteCourse","recommendations"]
     with open(name_list, 'r') as file:
         data = json.load(file)
@@ -64,9 +64,8 @@ async def get_program_info(school_name,name_list):
                 try:
                     res[name][metric_name[idx]]['link'] = search_res[idx]['organic'][0]['link']
                 except:
-                    print("capturing index error")
-                    print(len(search_res))
-                    print(len(search_res[idx]))
+                    print("capturing index error,printing keys:")
+                    print(search_res[idx].keys())
                 
     return res
     

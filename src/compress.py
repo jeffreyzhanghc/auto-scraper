@@ -4,7 +4,6 @@ import re
 import os
 import openai
 from openai import OpenAI
-import time
 from dotenv import load_dotenv, find_dotenv
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -102,8 +101,12 @@ async def simple_fetch_with_playwright(url):
         try:
             await page.goto(url, timeout=10000)  # Timeout after 10 seconds
         except:
-            print("Error: Timeout while loading the page using playwright: "+url)
-            return await simple_fetch(url)
+            await asyncio.sleep(10)
+            try:
+                await page.goto(url, timeout=10000)  # Timeout after 10 seconds
+            except:
+                print("Timeout while loading the page using playwright: "+url,"switcheding methods...")
+                return await simple_fetch(url)
         # Add logic here to wait for the elements you need to ensure they are loaded
         content = await page.content()  # Gets the full page HTML
         # Process the content as needed
@@ -118,7 +121,7 @@ async def compress_metric(raw_metrics,program_name):
     name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submit material","material submitted"], \
                         "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
                         "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
-                        "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","coursework preparation","following areas"],\
+                        "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","coursework preparation","academic backgrounds","prerequisite course"],\
                         "recommendations":["recommendation","letters of recommendation"],}
     q = raw_metrics[program_name]
     metric_name = list(q.keys())
@@ -159,15 +162,15 @@ async def compress_metric(raw_metrics,program_name):
                 else:
                     relevant_sentences = await normal_compress(sentences,keywords)
                 q[name]['compressedText'].append(relevant_sentences)
-        
-
-
-
     return q
 
 async def batch_compress(raw_metrics,program_names):
-    task = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names]
-    responses = await asyncio.gather(*task)
+    half_idx = len(program_names)//2
+    task1 = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names[:half_idx]]
+    task2 = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names[half_idx:]]
+    response1 = await asyncio.gather(*task1)
+    response2 = await asyncio.gather(*task2)
+    responses = response1+response2
     return responses
 
 
