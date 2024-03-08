@@ -130,7 +130,10 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res = json.load(file)
         tasks = [get_info(url,"output"+str(j)+".json",batch_size,school) for url,school,j in zip(gu,sc,range(batch_size))]
         fetched_info = await asyncio.gather(*tasks)
-        program_branches,entry_pages = await get_program_branches(gpt_selected_program_urls)
+        try:
+            program_branches,entry_pages = await asyncio.wait_for(get_program_branches(gpt_selected_program_urls),timeout=1000)
+        except TimeoutError:
+            print("Timeout for fetching program branches")
         for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
@@ -138,16 +141,19 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res[sc[j]]['graduate']['general_info'] = fetched_info[j]
             if program_branches[j]:
                 tasks = [simple_fetch(url) for url in program_branches[j]]
-                program_info = await asyncio.gather(*tasks)
+                try:  
+                    program_info = await asyncio.wait_for(asyncio.gather(*tasks),timeout=1000)
+                except TimeoutError:
+                    print("Timeout for fetching websites")
                 res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
                 print("fetching dimension metrics for "+sc[j]+"...")
                 try:
-                    await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=500)
+                    await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=1000)
                 except TimeoutError:
                     print("Timeout for getting program names")
                 try:
-                    _metrics = await asyncio.wait_for(get_program_info(sc[j],program_name_storage),timeout=500)
+                    _metrics = await asyncio.wait_for(get_program_info(sc[j],program_name_storage),timeout=1000)
                 except TimeoutError:
                     print("Timeout for getting metrics")
                 current_program_names = list(_metrics.keys())
