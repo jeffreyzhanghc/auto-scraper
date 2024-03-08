@@ -181,7 +181,7 @@ async def compress_metric(raw_metrics,program_name):
                 keywords = name_to_keywords[name]        
                 if name == "prerequisiteCourse":
                     try:
-                        relevant_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.7,model),timeout=1000)
+                        relevant_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
                     except TimeoutError:
                         print("Timeout for special compress")
                 elif name == "GRERequirement":
