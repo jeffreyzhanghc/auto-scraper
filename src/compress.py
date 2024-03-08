@@ -131,6 +131,9 @@ async def compress_metric(raw_metrics,program_name):
         q[name]['originalText'] = []
         q[name]['compressedText'] = []
         link = q[name]['link']
+        if link == None: 
+            print("Notice a null link",program_name,name)
+            continue
         if link not in link_name_map:
             link_name_map[link] = []
             link_name_map[link].append(name)

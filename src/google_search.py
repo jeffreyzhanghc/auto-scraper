@@ -61,12 +61,13 @@ async def get_program_info(school_name,name_list):
                 queries.append(query)
             search_res = await serper_search(queries)
             for idx in range(len(metrics)):
+                res[name][metric_name[idx]]['link'] = None
                 try:
                     res[name][metric_name[idx]]['link'] = search_res[idx]['organic'][0]['link']
                 except:
-                    print("capturing index error,printing keys:")
-                    print(search_res[idx].keys())
-                    print("check organics:  ",search_res[idx].keys()['orgranic'])
+                    print("capturing index error")
+                    print("check organics:  ",search_res[idx]['organic'])
+                    print("check links:  ",res[name][metric_name[idx]]['link'])
                 
     return res
     
