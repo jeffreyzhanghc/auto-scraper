@@ -18,6 +18,13 @@ from program_url_detector import detect_prorgams
 from gpt_program_content import get_prorgam_name
 from google_search import get_program_info
 from compress import batch_compress
+import nltk
+from gensim.models import KeyedVectors
+from nltk.tokenize import sent_tokenize
+import numpy as np
+import gensim.downloader as api
+
+
 
 def filter_url(file:str):
     '''
@@ -159,7 +166,7 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 current_program_names = list(_metrics.keys())
                 ##notice the order of the program names
                 try:
-                    processed_metrics = await asyncio.wait_for(batch_compress(_metrics,current_program_names),timeout=1200)
+                    processed_metrics = await asyncio.wait_for(batch_compress(_metrics,current_program_names),timeout=2700)
                 except TimeoutError:
                     print("Timeout for compressing metrics")
                 for k in range(len(current_program_names)):
