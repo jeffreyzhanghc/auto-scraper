@@ -142,11 +142,20 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
                 print("fetching dimension metrics for "+sc[j]+"...")
-                await get_prorgam_name(program_info,program_name_storage)
-                _metrics = await get_program_info(sc[j],program_name_storage)
+                try:
+                    await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=500)
+                except TimeoutError:
+                    print("Timeout for getting program names")
+                try:
+                    _metrics = await asyncio.wait_for(get_program_info(sc[j],program_name_storage),timeout=500)
+                except TimeoutError:
+                    print("Timeout for getting metrics")
                 current_program_names = list(_metrics.keys())
                 ##notice the order of the program names
-                processed_metrics = await batch_compress(_metrics,current_program_names)
+                try:
+                    processed_metrics = await asyncio.wait_for(batch_compress(_metrics,current_program_names),timeout=1200)
+                except TimeoutError:
+                    print("Timeout for compressing metrics")
                 for k in range(len(current_program_names)):
                     _metrics[current_program_names[k]] = processed_metrics[k]
                 res[sc[j]]['graduate']['metrics'] = _metrics                

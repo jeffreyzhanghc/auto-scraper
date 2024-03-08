@@ -66,6 +66,7 @@ async def get_program_info(school_name,name_list):
                 except:
                     print("capturing index error,printing keys:")
                     print(search_res[idx].keys())
+                    print("check organics:  ",search_res[idx].keys()['orgranic'])
                 
     return res
     
