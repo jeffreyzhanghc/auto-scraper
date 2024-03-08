@@ -116,6 +116,8 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
     a = {}
     with open(results_path, 'w') as f:
         json.dump(a, f)
+    with open("../knowledge_files/side_links_records.json", 'w') as f:
+        json.dump(a, f)
     start_time = time.time()
     #find the ending index
     if end!=-1 and i>=end: print("Start Index should be larger than end index")

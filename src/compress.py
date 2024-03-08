@@ -142,7 +142,7 @@ async def compress_metric(raw_metrics,program_name):
     name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submit material","material submitted"], \
                         "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
                         "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
-                        "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","coursework preparation","academic backgrounds","prerequisite course"],\
+                        "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","academic backgrounds","prerequisite course"],\
                         "recommendations":["recommendation","letters of recommendation"],}
     q = raw_metrics[program_name]
     metric_name = list(q.keys())
@@ -181,7 +181,9 @@ async def compress_metric(raw_metrics,program_name):
                 keywords = name_to_keywords[name]        
                 if name == "prerequisiteCourse":
                     try:
-                        relevant_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
+                        algo_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.65,model),timeout=1000)
+                        keyword_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
+                        relevant_sentences = algo_sentences+keyword_sentences
                     except TimeoutError:
                         print("Timeout for special compress")
                 elif name == "GRERequirement":
@@ -209,11 +211,11 @@ async def batch_compress(raw_metrics,program_names):
     return responses
 
 '''
-with open("grad_info 2.json", 'r') as file:
+with open("grad_info.json", 'r') as file:
     data = json.load(file)
-mm = data["Auburn University"]["graduate"]["metrics"]["Clinical Psychology Ph.D."]["prerequisiteCourse"]["link"]
+mm = data["Washington University in St. Louis"]["graduate"]["metrics"]["Full-time Master of Business Administration (MBA)"]["prerequisiteCourse"]["link"]
 key = ['course requirement',"introductory coursework","academic preparation","coursework preparation","academic backgrounds","prerequisite course"]
-text = asyncio.run(simple_fetch_with_playwright("https://bulletin.auburn.edu/thegraduateschool/graduatedegreesoffered/psychologymsphd_major/"))
+text = asyncio.run(simple_fetch_with_playwright("https://olin.wustl.edu/programs/mbas/full-time-mba/apply.php"))
 nlp = English()
 nlp.add_pipe('sentencizer')
 
@@ -222,6 +224,8 @@ doc = nlp(text)
 sentences = [sent.text.strip() for sent in doc.sents]
 print(asyncio.run(special_compress(sentences,key,0.65,model)))
 '''
+
+
 
 
 
