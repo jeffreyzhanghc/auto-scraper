@@ -37,14 +37,12 @@ llogger = logging.getLogger(__name__)
 async def call_chatgpt_async(session, url: str):
     prompt = f"""
             '''{url}'''
-            Given the entry link of a school program, use your knowledge to accurately identify the prorgam name and the degreee offered, and return
+            Given the link for webpage of a graduate program, use your knowledge to accurately identify the prorgam name and the degrees it offered, and return
             in JSON format where the name of the program is the property, and the value of the property is None.
             For program name, be specific about Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D.
             for example:
             Given "https://oge.mit.edu/programs/aeronautics-and-astronautics/"
             you should return: {{"Master of Science in Aeronautics and Astronautics (SM)": None}}
-
-
             """
     payload = {
         'model': "gpt-4-1106-preview",
