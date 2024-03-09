@@ -76,8 +76,7 @@ async def simple_fetch(url):
         return (url,text,date)
 
     except Exception as e:
-        print(f"Error fetching content from {url}: {e}")
-        return None  # Return None or some error indicator
+        return (url,None,None)  # Return None or some error indicator
 
 async def fetch_all_urls(url_list):
     tasks = [simple_fetch(url) for url in url_list]

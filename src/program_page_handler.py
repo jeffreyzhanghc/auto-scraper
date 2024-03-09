@@ -43,7 +43,8 @@ async def call_chatgpt_async(session, links: list):
     prompt = f"""
             '''{links}'''
             Given the list of url, select the urls that you think are related to a specific master study program. The urls should indicate
-            a specific field of study. return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
+            a specific field of study. Notice that sometimes program names are in abbreviation,try you best to classify correctly and 
+            taking the abbreviation into consideration. Return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
             value. Try to make the decision fast and efficiently with accuracy. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
             """
     payload = {
@@ -97,6 +98,7 @@ async def fetch_all_links(page):
     '''
     This function fecthes all the links on the input webpage
     '''
+    await page.wait_for_load_state('networkidle')
     links = await page.evaluate('''() => {
         // Select all anchor tags in the body
         const anchorElements = document.body.querySelectorAll('a');
@@ -147,5 +149,8 @@ async def get_program_branches(url_file):
     all_links = await fetch_all_url(program_urls)
     results = await call_chatgpt_bulk(all_links)
     return (results,program_urls)
+
+
+
 
 

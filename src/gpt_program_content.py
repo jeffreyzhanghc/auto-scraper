@@ -82,9 +82,6 @@ async def summarize_info(info_sets):
 async def get_prorgam_name(program_info,outpath):
     urls = []
     for element in program_info:
-        if element is None:
-            print("This element in program info is None:",element)
-            continue
         urls.append(element[0])
     res = await summarize_info(urls)
     json_res = []
