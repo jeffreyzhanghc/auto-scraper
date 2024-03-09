@@ -47,7 +47,7 @@ async def call_chatgpt_async(session, links: list):
             value. Try to make the decision fast and efficiently with accuracy. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
             """
     payload = {
-        'model': "gpt-4-1106-preview",
+        'model': "gpt-4-0125-preview",
         'messages': [
             {"role": "user", "content": prompt}
         ],

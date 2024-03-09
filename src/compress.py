@@ -120,11 +120,11 @@ async def simple_fetch_with_playwright(url):
         browser = await p.chromium.launch()
         page = await browser.new_page()
         try:
-            await page.goto(url, timeout=10000)  # Timeout after 10 seconds
+            await page.goto(url, timeout=30000)  # Timeout after 10 seconds
         except:
             await asyncio.sleep(10)
             try:
-                await page.goto(url, timeout=10000)  # Timeout after 10 seconds
+                await page.goto(url, timeout=30000)  # Timeout after 10 seconds
             except:
                 print("Timeout while loading the page using playwright: "+url,"switcheding methods...")
                 return await simple_fetch(url)

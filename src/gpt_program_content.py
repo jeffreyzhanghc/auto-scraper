@@ -45,7 +45,7 @@ async def call_chatgpt_async(session, url: str):
             you should return: {{"Master of Science in Aeronautics and Astronautics (SM)": None}}
             """
     payload = {
-        'model': "gpt-4-1106-preview",
+        'model': "gpt-4-0125-preview",
         'messages': [
             {"role": "user", "content": prompt}
         ],
