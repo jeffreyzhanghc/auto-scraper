@@ -137,77 +137,76 @@ async def simple_fetch_with_playwright(url):
         return res
 
     
-async def compress_metric(raw_metrics,program_name):
-    
-    name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submit material","material submitted"], \
-                        "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
-                        "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
-                        "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","academic backgrounds","prerequisite course"],\
-                        "recommendations":["recommendation","letters of recommendation"],}
-    q = raw_metrics[program_name]
-    metric_name = list(q.keys())
-    
-    link_name_map = {}
-    for name in metric_name:
-        q[name]['originalText'] = []
-        q[name]['compressedText'] = []
-        link = q[name]['link']
-        if link == None: 
-            print("Notice a null link",program_name,name)
-            continue
-        if link not in link_name_map:
-            link_name_map[link] = []
-            link_name_map[link].append(name)
-            continue
-        else:
-            link_name_map[link].append(name)
-    for link,names in link_name_map.items():
-        text = await  simple_fetch_with_playwright(link)
-        if text == None:
-            print("Fetched None context: "+link)
+async def compress_metric(raw_metrics,program_name,semaphore):
+    async with semaphore:
+        name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submit material","material submitted"], \
+                            "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
+                            "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
+                            "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","academic backgrounds","prerequisite course"],\
+                            "recommendations":["recommendation","letters of recommendation"],}
+        q = raw_metrics[program_name]
+        metric_name = list(q.keys())
+        
+        link_name_map = {}
+        for name in metric_name:
+            q[name]['originalText'] = []
+            q[name]['compressedText'] = []
+            link = q[name]['link']
+            if link == None: 
+                print("Notice a null link",program_name,name)
+                continue
+            if link not in link_name_map:
+                link_name_map[link] = []
+                link_name_map[link].append(name)
+                continue
+            else:
+                link_name_map[link].append(name)
+        for link,names in link_name_map.items():
+            text = await  simple_fetch_with_playwright(link)
+            if text == None:
+                print("Fetched None context: "+link)
+                for name in names:
+                    q[name]['originalText'].append(None)
+                    q[name]['compressedText'].append(None)
+                continue
             for name in names:
-                q[name]['originalText'].append(None)
-                q[name]['compressedText'].append(None)
-            continue
-        for name in names:
-            q[name]['originalText'].append(text)
-        nlp = English()
-        nlp.add_pipe('sentencizer')
+                q[name]['originalText'].append(text)
+            nlp = English()
+            nlp.add_pipe('sentencizer')
 
-        doc = nlp(text)
+            doc = nlp(text)
 
-        sentences = [sent.text.strip() for sent in doc.sents]
-        for name in names:
-                keywords = name_to_keywords[name]        
-                if name == "prerequisiteCourse":
-                    try:
-                        algo_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.65,model),timeout=1500)
-                        keyword_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
-                        relevant_sentences = algo_sentences+keyword_sentences
-                    except TimeoutError:
-                        print("Timeout for special compress")
-                elif name == "GRERequirement":
-                    relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence for keyword in keywords)]
-                else:
-                    relevant_sentences = await normal_compress(sentences,keywords)
-                q[name]['compressedText'].append(relevant_sentences)
-    return q
+            sentences = [sent.text.strip() for sent in doc.sents]
+            for name in names:
+                    keywords = name_to_keywords[name]        
+                    if name == "prerequisiteCourse":
+                        try:
+                            algo_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.65,model),timeout=1500)
+                            keyword_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
+                            relevant_sentences = algo_sentences+keyword_sentences
+                        except TimeoutError:
+                            print("Timeout for special compress")
+                    elif name == "GRERequirement":
+                        relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence for keyword in keywords)]
+                    else:
+                        relevant_sentences = await normal_compress(sentences,keywords)
+                    q[name]['compressedText'].append(relevant_sentences)
+        return q
+
+async def batch_semaphore(part_metrics,sliced_names,semaphore):
+    async with semaphore:
+        task = [asyncio.create_task(compress_metric(part_metrics,program_name)) for program_name in sliced_names]
+        response = asyncio.gather(*task)
+        return response
+
 
 async def batch_compress(raw_metrics,program_names):
-    half_idx = len(program_names)//2
-    task1 = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names[:half_idx]]
-    task2 = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names[half_idx:]]
+    semaphore = asyncio.Semaphore(10) 
+    task = [asyncio.create_task(compress_metric(raw_metrics,program_name,semaphore)) for program_name in program_names]  
     try:
-        response1 = await asyncio.wait_for(asyncio.gather(*task1),timeout=3000)
+        responses = await asyncio.wait_for(asyncio.gather(*task),timeout=3000)
     except TimeoutError:
-        print("fetch response1 timeout")
-
-    try:
-        response2 = await asyncio.wait_for(asyncio.gather(*task2),timeout=3000)
-    except:
-        print("fetch response2 timeout")
-
-    responses = response1+response2
+        print("fetch response timeout")
     return responses
 
 '''
