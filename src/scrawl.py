@@ -168,7 +168,7 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 current_program_names = list(_metrics.keys())
                 ##notice the order of the program names
                 try:
-                    processed_metrics = await asyncio.wait_for(batch_compress(_metrics,current_program_names),timeout=2700)
+                    processed_metrics = await asyncio.wait_for(batch_compress(_metrics,current_program_names),timeout=6000)
                 except TimeoutError:
                     print("Timeout for compressing metrics")
                 for k in range(len(current_program_names)):

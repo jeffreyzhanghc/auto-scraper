@@ -181,7 +181,7 @@ async def compress_metric(raw_metrics,program_name):
                 keywords = name_to_keywords[name]        
                 if name == "prerequisiteCourse":
                     try:
-                        algo_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.65,model),timeout=1000)
+                        algo_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.65,model),timeout=1500)
                         keyword_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
                         relevant_sentences = algo_sentences+keyword_sentences
                     except TimeoutError:
@@ -198,12 +198,12 @@ async def batch_compress(raw_metrics,program_names):
     task1 = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names[:half_idx]]
     task2 = [asyncio.create_task(compress_metric(raw_metrics,program_name)) for program_name in program_names[half_idx:]]
     try:
-        response1 = await asyncio.wait_for(asyncio.gather(*task1),timeout=1200)
+        response1 = await asyncio.wait_for(asyncio.gather(*task1),timeout=3000)
     except TimeoutError:
         print("fetch response1 timeout")
 
     try:
-        response2 = await asyncio.wait_for(asyncio.gather(*task2),timeout=1200)
+        response2 = await asyncio.wait_for(asyncio.gather(*task2),timeout=3000)
     except:
         print("fetch response2 timeout")
 
