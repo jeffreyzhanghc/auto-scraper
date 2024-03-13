@@ -47,10 +47,9 @@ async def get_program_info(school_name,name_list):
     metric_name = ["Deadline","TOEFLRequirement","GRERequirement","prerequisiteCourse","recommendations"]
     with open(name_list, 'r') as file:
         data = json.load(file)
-    program_names = []
-    for dat in data:
-        program_names.append(list(dat.keys())[0])
-    program_names = list(set(program_names))
+    program_names = list(data[0].keys())
+    print(program_names)
+    #program_names = list(set(program_names))
     for name in program_names:
         if name not in res:
             res[name] = {}

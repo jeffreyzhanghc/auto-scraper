@@ -148,8 +148,8 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res[sc[j]]['Date_fetched'] = datetime.datetime.now().strftime('%Y-%m-%d')
             res[sc[j]]['graduate']['general_info'] = fetched_info[j]
             if program_branches[j]:
-                tasks = [simple_fetch(url) for url in program_branches[j]]
                 try:  
+                    tasks = [simple_fetch(url) for url in program_branches[j]]
                     program_info = await asyncio.wait_for(asyncio.gather(*tasks),timeout=1000)
                 except TimeoutError:
                     print("Timeout for fetching websites")

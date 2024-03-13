@@ -139,9 +139,9 @@ async def simple_fetch_with_playwright(url):
     
 async def compress_metric(raw_metrics,program_name,semaphore):
     async with semaphore:
-        name_to_keywords = {"Deadline":['deadline', 'application due','application deadline', 'due', 'date',"submit material","material submitted"], \
+        name_to_keywords = {"Deadline":['deadline', 'application due','application deadline',"submit material","material submitted"], \
                             "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
-                            "TOEFLRequirement":['toefl',"ielts","english proficiency"],\
+                            "TOEFLRequirement":['toefl',"ielts"],\
                             "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","academic backgrounds","prerequisite course"],\
                             "recommendations":["recommendation","letters of recommendation"],}
         q = raw_metrics[program_name]

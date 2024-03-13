@@ -76,20 +76,15 @@ async def call_chatgpt_bulk(url_sets):
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        idx = len(url_sets)//6
-        tasks1 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[:idx]]
-        tasks2 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[idx:2*idx]]
-        tasks3 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[2*idx:3*idx]]
-        tasks4 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[3*idx:4*idx]]
-        tasks5 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[4*idx:5*idx]]
-        tasks6 = [tg.create_task(call_chatgpt_async(session, url)) for url in url_sets[5*idx:]]
-        responses1 = await asyncio.gather(*tasks1)
-        responses2 = await asyncio.gather(*tasks2)
-        responses3 = await asyncio.gather(*tasks3)
-        responses4 = await asyncio.gather(*tasks4)
-        responses5 = await asyncio.gather(*tasks5)
-        responses6 = await asyncio.gather(*tasks6)
-        response = responses1+responses2+responses3+responses4+responses5+responses6
+        responses = []
+        idx = len(url_sets[0])//3
+        task1 = [tg.create_task(call_chatgpt_async(session, url[:idx])) for url in url_sets]
+        task2 = [tg.create_task(call_chatgpt_async(session, url[idx:2*idx])) for url in url_sets]
+        task3 = [tg.create_task(call_chatgpt_async(session, url[2*idx:])) for url in url_sets]
+        response1 = await asyncio.gather(*task1)
+        response2 = await asyncio.gather(*task2)
+        response3 = await asyncio.gather(*task3)
+        response = response1[0]+response2[0]+response3[0]
     return response
 
 
@@ -130,9 +125,11 @@ async def fetch_all_url(url_sets):
     Given the page urls, the funciton asynchronously extract all urls on all pages
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch_with_playwright(url)) for url in url_sets]
-        responses = await asyncio.gather(*tasks)
-    return responses
+        task1 = [tg.create_task(fetch_with_playwright(url[0])) for url in url_sets]
+        task2 = [tg.create_task(fetch_with_playwright(url[1])) for url in url_sets]
+        response1 = await asyncio.gather(*task1)
+        response2 = await asyncio.gather(*task2)
+    return [response1,response2]
 
 async def get_program_branches(url_file):
     '''
@@ -144,11 +141,25 @@ async def get_program_branches(url_file):
     for element in data:
         url = list(element.values())[0]
         program_urls.append(url)
-        print("program main entry starts from this:",url) 
-    
-    all_links = await fetch_all_url(program_urls)
-    results = await call_chatgpt_bulk(all_links)
+        print("will fetch programs from following links:",url) 
+    results = []
+    for program_url in program_urls:
+        site1_links,site2_links = await fetch_all_url([program_url])
+        res_site1 = await call_chatgpt_bulk(site1_links)
+        if len(res_site1[0])<25:
+            print("Detect current program link numbers is smaller than 25, will include secondary entry pages")
+            res_site2 = await call_chatgpt_bulk(site2_links)
+            results.append(res_site1+res_site2)
+        else:
+            results.append(res_site1)
     return (results,program_urls)
+    
+
+'''
+a = asyncio.run(fetch_with_playwright("https://catalogue.uci.edu/graduatedegrees//"))
+print(a)
+'''
+
 
 
 

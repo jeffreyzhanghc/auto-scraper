@@ -42,15 +42,13 @@ async def google_program_url(path,universities):
       side_links = json.load(file)
     dict = []
     for university in universities:
-        query = f"{university} master majors full list"
+        query = f"{university} master majors list"
         serper_res = await serper(query)
-        if 'answerBox' in serper_res.keys():  
-          organic = serper_res['answerBox']['link']
-        else:
-          organic = serper_res['organic'][0]['link']
-          if 'sitelinks' in serper_res['organic'][0]:
-              side_links[university] = serper_res['organic'][0]['sitelinks']
-        value = {university:organic}
+        organic1 = serper_res['organic'][0]['link']
+        organic2 = serper_res['organic'][1]['link']
+        if 'sitelinks' in serper_res['organic'][0]:
+            side_links[university] = serper_res['organic'][0]['sitelinks']
+        value = {university:[organic1,organic2]}
         dict.append(value)
     with open("../knowledge_files/side_links_records.json", 'w') as file:
        json.dump(side_links, file, indent=4)

@@ -23,9 +23,10 @@ from tenacity import (
     after_log
 ) 
 import logging
-
+import http.client
 
 load_dotenv()
+serperkey = os.getenv("serperkey")
 api_key1 = os.getenv("openaikey1")
 api_key = api_key1
 
@@ -34,15 +35,23 @@ llogger = logging.getLogger(__name__)
 @retry(wait=wait_random_exponential(min=1, max=60), 
        stop=stop_after_attempt(9), 
        retry=retry_if_exception_type(Exception))
-async def call_chatgpt_async(session, url: str):
+async def call_chatgpt_async(session, names: list):
     prompt = f"""
-            '''{url}'''
-            Given the link for webpage of a graduate program, use your knowledge to accurately identify the prorgam name and the degrees it offered, and return
-            in JSON format where the name of the program is the property, and the value of the property is None.
-            For program name, be specific about Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D.
-            for example:
-            Given "https://oge.mit.edu/programs/aeronautics-and-astronautics/"
-            you should return: {{"Master of Science in Aeronautics and Astronautics (SM)": None}}
+            '''{names}'''
+            Given the list of names of website titles for some graduate school programs webpage, help me rephrase the webpage title to present the 
+            corresponding graduate majors precisely as shown in the university websites. Use your knowledge to accurately identify the prorgam name and 
+            the degrees it offered, and return in JSON format where the name of the program is the property, and the value of the property is None.
+            For program name, be specific about Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D. When the websites title
+            indicates multiple degrees offered, you need to separate them to separate element in dictionary
+            Following are some examples:
+            Given 'Aerospace Engineering — MS', you should add {{"MS in Aeronautics and Astronautics (SM)": None}} as JSON elements;
+            Given 'Aerospace Engineering — MS, PhD'
+            you should add both {{"MS in Aeronautics and Astronautics (SM)": None}} and {{"PhD in Aeronautics and Astronautics (SM)": None}} as
+            JSON elements;
+            if your are given names like 'Fields of Study | Office of Graduate Education - MIT',you should NOT include because this is not
+            describing a program name;
+            if you are given 'Aerospace Engineering', which only have program name alone without indication of degrees offered like ,you should add 
+            something like {{"Graduate programs in Aeronautics and Astronautics": None}}
             """
     payload = {
         'model': "gpt-4-0125-preview",
@@ -61,37 +70,66 @@ async def call_chatgpt_async(session, url: str):
             response = await response.json()
         if "error" in response:
             print(f"OpenAI request failed with error {response['error']}")
-        return response['choices'][0]['message']['content']
+        return json.loads(response['choices'][0]['message']['content'])
     except:
         print("GPT program Summrization: Request failed.")
 
 
-async def summarize_info(info_sets):
+async def summarize_info(names):
     '''
     Call chatGPT for all the given prompts in parallel.
     Input: a list of parsed resume text
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(call_chatgpt_async(session, info)) for info in info_sets]
+        tasks = [tg.create_task(call_chatgpt_async(session, names))]
         responses = await asyncio.gather(*tasks)
     return responses
 
-
+async def serper(queries):
+    '''
+    return the first search results in serper
+    '''
+    payload = json.dumps(
+  {
+    "q": queries
+  })
+    headers = {
+    'X-API-KEY': f'{serperkey}',
+    'Content-Type': 'application/json'
+    }
+    conn = http.client.HTTPSConnection("google.serper.dev")
+    conn.request("POST", "/search", payload, headers)
+    res = conn.getresponse()
+    search_res = res.read().decode("utf-8")
+    return json.loads(search_res)
 
 async def get_prorgam_name(program_info,outpath):
     urls = []
     for element in program_info:
         urls.append(element[0])
-    res = await summarize_info(urls)
+    titles = {}
+    names = []
+    for url in urls:
+        serper_res = await serper(url)
+        try:
+            titles[url] = serper_res['organic'][0]['title']
+            names.append(serper_res['organic'][0]['title'])
+        except:
+            print("Serper get website name error:",serper_res)
+    res = await summarize_info(names)
+    '''
     json_res = []
     for i in range(len(res)):
         if res[i] != None:
             json_res.append(json.loads(res[i]))
         else:
             print("GPT fails to extract name from link:"+ urls[i])
+    '''
+
+    
     with open(outpath, 'w') as f:
-            json.dump(json_res, f,ensure_ascii=False, indent=4)
+            json.dump(res, f,ensure_ascii=False, indent=4)
 
 
 
