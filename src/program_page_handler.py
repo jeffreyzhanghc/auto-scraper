@@ -145,6 +145,9 @@ async def get_program_branches(url_file):
     results = []
     for program_url in program_urls:
         site1_links,site2_links = await fetch_all_url([program_url])
+        if site1_links[0] == None or site2_links[0] == None:
+            print("entry page cannot be fetched")
+            results.append([])
         res_site1 = await call_chatgpt_bulk(site1_links)
         if len(res_site1[0])<25:
             print("Detect current program link numbers is smaller than 25, will include secondary entry pages")

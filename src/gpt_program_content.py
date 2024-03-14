@@ -50,8 +50,8 @@ async def call_chatgpt_async(session, names: list):
             JSON elements;
             if your are given names like 'Fields of Study | Office of Graduate Education - MIT',you should NOT include because this is not
             describing a program name;
-            if you are given 'Aerospace Engineering', which only have program name alone without indication of degrees offered like ,you should add 
-            something like {{"Graduate programs in Aeronautics and Astronautics": None}}
+            if you are given titles like 'History of Science - Princeton Graduate School', which only have program name alone without indication of degrees offered like ,you should add 
+            something like {{"Graduate programs in Aeronautics and Astronautics": None}};
             """
     payload = {
         'model': "gpt-4-0125-preview",
