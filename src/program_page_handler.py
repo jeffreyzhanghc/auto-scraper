@@ -76,7 +76,6 @@ async def call_chatgpt_bulk(url_sets):
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        responses = []
         idx = len(url_sets[0])//3
         task1 = [tg.create_task(call_chatgpt_async(session, url[:idx])) for url in url_sets]
         task2 = [tg.create_task(call_chatgpt_async(session, url[idx:2*idx])) for url in url_sets]
@@ -158,10 +157,13 @@ async def get_program_branches(url_file):
     return (results,program_urls)
     
 
+'''a = asyncio.run(fetch_all_url([["https://gradschool.utexas.edu/degrees-programs","https://gradschool.princeton.edu/academics/degrees-requirements/fields-study/ancient-world"]]))
+res_site1 = asyncio.run(call_chatgpt_bulk(a))
+print(len(res_site1))
+print(res_site1)
 '''
-a = asyncio.run(fetch_with_playwright("https://catalogue.uci.edu/graduatedegrees//"))
-print(a)
-'''
+
+
 
 
 

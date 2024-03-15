@@ -82,9 +82,19 @@ async def summarize_info(names):
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(call_chatgpt_async(session, names))]
-        responses = await asyncio.gather(*tasks)
-    return responses
+        idx = len(names)//3
+        responses = {}
+        #task1 = [tg.create_task(call_chatgpt_async(session, url[:idx])) for url in url_sets]
+        task1 = [tg.create_task(call_chatgpt_async(session, names[:idx]))]
+        task2 = [tg.create_task(call_chatgpt_async(session, names[idx:2*idx]))]
+        task3 = [tg.create_task(call_chatgpt_async(session, names[2*idx:]))]
+        response1 = await asyncio.gather(*task1)
+        response2 = await asyncio.gather(*task2)
+        response3 = await asyncio.gather(*task3)
+        responses.update(response1[0])
+        responses.update(response2[0])
+        responses.update(response3[0])
+    return [responses]
 
 async def serper(queries):
     '''

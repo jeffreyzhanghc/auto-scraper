@@ -143,7 +143,7 @@ async def compress_metric(raw_metrics,program_name,semaphore):
                             "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
                             "TOEFLRequirement":['toefl',"ielts"],\
                             "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","academic backgrounds","prerequisite course"],\
-                            "recommendations":["recommendation","letters of recommendation"],}
+                            "recommendations":["recommendation","letters of recommendation","letters of reference"],}
         q = raw_metrics[program_name]
         metric_name = list(q.keys())
         
