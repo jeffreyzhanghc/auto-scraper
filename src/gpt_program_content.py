@@ -38,11 +38,11 @@ llogger = logging.getLogger(__name__)
 async def call_chatgpt_async(session, names: list):
     prompt = f"""
             '''{names}'''
-            Given the list of names of website titles for some graduate school programs webpage, help me rephrase the webpage title to present the 
+            Given the list of  website titles for some graduate school programs webpage, help me rephrase the webpage title to present the 
             corresponding graduate majors precisely as shown in the university websites. Use your knowledge to accurately identify the prorgam name and 
-            the degrees it offered, and return in JSON format where the name of the program is the property, and the value of the property is None.
-            For program name, be specific about Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D. When the websites title
-            indicates multiple degrees offered, you need to separate them to separate element in dictionary
+            the degrees it offered (such as Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D etc.), and return in JSON
+            format where the name of the program is the property, and the value of the property is None.
+            When the websites title indicates MULTIPLE degrees offered, you need to SEPARATE them to separate element in dictionary
             Following are some examples:
             Given 'Aerospace Engineering — MS', you should add {{"MS in Aeronautics and Astronautics (SM)": None}} as JSON elements;
             Given 'Aerospace Engineering — MS, PhD'
@@ -50,8 +50,12 @@ async def call_chatgpt_async(session, names: list):
             JSON elements;
             if your are given names like 'Fields of Study | Office of Graduate Education - MIT',you should NOT include because this is not
             describing a program name;
-            if you are given titles like 'History of Science - Princeton Graduate School', which only have program name alone without indication of degrees offered like ,you should add 
-            something like {{"Graduate programs in Aeronautics and Astronautics": None}};
+            if you are given titles like 'History of Science - Princeton Graduate School', which only have program name alone without indication of degrees,you should only
+            classify them as graduate programs and add something like {{"Graduate programs in Aeronautics and Astronautics": None}};
+
+            Carefully follow the content of the webpage title, your goal is to REPHRASE but NOT to FABRICATE, if the information about degree offered is not clear,
+            try your best to stick with original webpage title or generally classify them as 'graduate program in...'!!! DO NOT add non-existing degree to corresponding program
+            names in results!!!!
             """
     payload = {
         'model': "gpt-4-0125-preview",
@@ -82,18 +86,21 @@ async def summarize_info(names):
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        idx = len(names)//3
+        idx = len(names)//4
         responses = {}
         #task1 = [tg.create_task(call_chatgpt_async(session, url[:idx])) for url in url_sets]
         task1 = [tg.create_task(call_chatgpt_async(session, names[:idx]))]
         task2 = [tg.create_task(call_chatgpt_async(session, names[idx:2*idx]))]
         task3 = [tg.create_task(call_chatgpt_async(session, names[2*idx:]))]
+        task4 = [tg.create_task(call_chatgpt_async(session, names[3*idx:]))]
         response1 = await asyncio.gather(*task1)
         response2 = await asyncio.gather(*task2)
         response3 = await asyncio.gather(*task3)
+        response4 = await asyncio.gather(*task4)
         responses.update(response1[0])
         responses.update(response2[0])
         responses.update(response3[0])
+        responses.update(response4[0])
     return [responses]
 
 async def serper(queries):

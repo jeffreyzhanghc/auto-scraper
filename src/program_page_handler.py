@@ -46,6 +46,7 @@ async def call_chatgpt_async(session, links: list):
             a specific field of study. Notice that sometimes program names are in abbreviation,try you best to classify correctly and 
             taking the abbreviation into consideration. Return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
             value. Try to make the decision fast and efficiently with accuracy. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
+            Try to include as many as program urls with the most PRECISION. DO NOT fabricate any urls that does not belong to the given lists.
             """
     payload = {
         'model': "gpt-4-0125-preview",
@@ -76,14 +77,16 @@ async def call_chatgpt_bulk(url_sets):
     Output: list of json formatted string
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        idx = len(url_sets[0])//3
+        idx = len(url_sets[0])//4
         task1 = [tg.create_task(call_chatgpt_async(session, url[:idx])) for url in url_sets]
         task2 = [tg.create_task(call_chatgpt_async(session, url[idx:2*idx])) for url in url_sets]
-        task3 = [tg.create_task(call_chatgpt_async(session, url[2*idx:])) for url in url_sets]
+        task3 = [tg.create_task(call_chatgpt_async(session, url[2*idx:3*idx])) for url in url_sets]
+        task4 = [tg.create_task(call_chatgpt_async(session, url[3*idx:])) for url in url_sets]
         response1 = await asyncio.gather(*task1)
         response2 = await asyncio.gather(*task2)
         response3 = await asyncio.gather(*task3)
-        response = response1[0]+response2[0]+response3[0]
+        response4 = await asyncio.gather(*task4)
+        response = response1[0]+response2[0]+response3[0]+response4[0]
     return response
 
 
@@ -148,20 +151,24 @@ async def get_program_branches(url_file):
             print("entry page cannot be fetched")
             results.append([])
         res_site1 = await call_chatgpt_bulk(site1_links)
-        if len(res_site1[0])<25:
+        print(len(res_site1[0]))
+        if len(res_site1[0])<30:
             print("Detect current program link numbers is smaller than 25, will include secondary entry pages")
             res_site2 = await call_chatgpt_bulk(site2_links)
-            results.append(res_site1+res_site2)
+            no_duplicates = list(set(res_site1+res_site2))
+            results.append(no_duplicates)
         else:
             results.append(res_site1)
     return (results,program_urls)
     
-
-'''a = asyncio.run(fetch_all_url([["https://gradschool.utexas.edu/degrees-programs","https://gradschool.princeton.edu/academics/degrees-requirements/fields-study/ancient-world"]]))
+'''
+a,b = asyncio.run(fetch_all_url([["https://gradschool.utexas.edu/degrees-programs","https://gradschool.princeton.edu/academics/degrees-requirements/fields-study/ancient-world"]]))
 res_site1 = asyncio.run(call_chatgpt_bulk(a))
 print(len(res_site1))
 print(res_site1)
 '''
+
+
 
 
 
