@@ -154,8 +154,8 @@ async def get_program_branches(url_file):
             results.append([])
         res_site1 = await call_chatgpt_bulk(site1_links)
         print(len(res_site1[0]))
-        if len(res_site1[0])<30:
-            print("Detect current program link numbers is smaller than 25, will include secondary entry pages")
+        if len(res_site1[0])<35:
+            print("Detect current program link numbers is smaller than 35, will include secondary entry pages")
             res_site2 = await call_chatgpt_bulk(site2_links)
             no_duplicates = list(set(res_site1+res_site2))
             results.append(no_duplicates)
