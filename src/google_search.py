@@ -62,10 +62,7 @@ async def get_program_info(school_name,name_list):
             for idx in range(len(metrics)):
                 res[name][metric_name[idx]]['link'] = None
                 try:
-                    if 'answerBox' in search_res[idx].keys():  
-                      res[name][metric_name[idx]]['link'] = search_res[idx]['answerBox']['link']
-                    else:
-                      res[name][metric_name[idx]]['link'] = search_res[idx]['organic'][0]['link']
+                    res[name][metric_name[idx]]['link'] = search_res[idx]['organic'][0]['link']
 
                 except:
                     print("capturing index error")

@@ -38,24 +38,34 @@ llogger = logging.getLogger(__name__)
 async def call_chatgpt_async(session, names: list):
     prompt = f"""
             '''{names}'''
-            Given the list of  website titles for some graduate school programs webpage, help me rephrase the webpage title to present the 
-            corresponding graduate majors precisely as shown in the university websites. Use your knowledge to accurately identify the prorgam name and 
-            the degrees it offered (such as Master of Science(M.S.), Master of Arts(M.A.), Master of Engineering (M.Eng) or Ph.D etc.), and return in JSON
-            format where the name of the program is the property, and the value of the property is None.
-            When the websites title indicates MULTIPLE degrees offered, you need to SEPARATE them to separate element in dictionary
-            Following are some examples:
-            Given 'Aerospace Engineering — MS', you should add {{"MS in Aeronautics and Astronautics (SM)": None}} as JSON elements;
-            Given 'Aerospace Engineering — MS, PhD'
+            Given the list of  website titles for some graduate school programs webpage, use your knowledge to accurately identify the prorgam name and 
+            the degrees it offered, and return in JSON format where the name of the program is the property, and the value of the property is None.
+            
+            Following are some examples for four difference cases:
+
+            Case1:, given 'Aerospace Engineering — MS'
+            you should add {{"MS in Aeronautics and Astronautics (SM)": None}} as JSON elements, since you can identify easily Aerospace Engineering
+            is a pair of words likely indicating program names, and MS is abbreviation of Master of Science;
+
+            Case2:, given,'Aerospace Engineering — MS, PhD'
             you should add both {{"MS in Aeronautics and Astronautics (SM)": None}} and {{"PhD in Aeronautics and Astronautics (SM)": None}} as
-            JSON elements;
-            if your are given names like 'Fields of Study | Office of Graduate Education - MIT',you should NOT include because this is not
-            describing a program name;
-            if you are given titles like 'History of Science - Princeton Graduate School', which only have program name alone without indication of degrees,you should only
-            classify them as graduate programs and add something like {{"Graduate programs in Aeronautics and Astronautics": None}};
+            JSON elements, since can identify easily Aerospace Engineering is a pair of words likely indicating program names, and MS, PhD means it
+            offer two degrees, master of science and PhD;
+
+            Case3:, given names 'Fields of Study | Office of Graduate Education - MIT', you should NOT include because neither field of study or office of graduate education
+            means a program name, it merely shows the application related information but not specific program itself.
+
+            Case4:, given titles like 'History of Science - Princeton Graduate School', which only have program name alone without indication of degrees,you should only
+            classify them as graduate programs and add something like {{"Graduate programs in Aeronautics and Astronautics": None}}, since although the program names
+            is provided, there is no obvious abbreviation or direct information about the degree it offers; Normally, when you do not see abbreviation of 
+            degrees such as MS, PhD, Meng, SM, MA, or other variations, you should start to consider whether the degree is given in the title names. DO NOT add non-existing degree!!!
+            Carefully review the title instead of hallucinate; Another example of this case is "Transportation - MIT Office of Graduate Education", in this case you should add
+            {{"Graduate programs in Transportation": None}}, because you cannot find degree related information
 
             Carefully follow the content of the webpage title, your goal is to REPHRASE but NOT to FABRICATE, if the information about degree offered is not clear,
-            try your best to stick with original webpage title or generally classify them as 'graduate program in...'!!! DO NOT add non-existing degree to corresponding program
-            names in results!!!!
+            try your best to stick with original webpage title or generally classify them as 'graduate program in...'!!! Remember, giving general classification
+            as graduate programs is acceptable, but generate no-clue results such as Master of Engineering in Supply Chain Management (Blended) from "Supply Chain Management Blended | Office of Graduate Education"
+            is not acceptable.
             """
     payload = {
         'model': "gpt-4-0125-preview",

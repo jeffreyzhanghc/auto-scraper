@@ -43,10 +43,12 @@ async def call_chatgpt_async(session, links: list):
     prompt = f"""
             '''{links}'''
             Given the list of url, select the urls that you think are related to a specific master study program. The urls should indicate
-            a specific field of study. Notice that sometimes program names are in abbreviation,try you best to classify correctly and 
-            taking the abbreviation into consideration. Return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
-            value. Try to make the decision fast and efficiently with accuracy. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
-            Try to include as many as program urls with the most PRECISION. DO NOT fabricate any urls that does not belong to the given lists.
+            a specific field of study. Notice that sometimes program names are in abbreviation,remember to take the abbreviation into consideration.
+            Also, you may see some urls of graduate information related pages, but do not include those url since they are not related to specific major fields
+            
+            Return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
+            value. Try to make the decision fast and accurate. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
+            Under standards of choosing urls contains or indicating some field-of-studies,try to include AS MANY URLS AS POSSIBLE.
             """
     payload = {
         'model': "gpt-4-0125-preview",

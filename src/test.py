@@ -52,7 +52,7 @@ async def simple_fetch(url):
         return (url,None,None)  # Return None or some error indicator
     
 async def main():
-    await detect_prorgams(["Massachusetts Institute of Technology (MIT)"],program_urls,gpt_selected_program_urls)
+    await detect_prorgams(["The University of Texas at Austin"],program_urls,gpt_selected_program_urls)
     program_branches,entry_pages = await asyncio.wait_for(get_program_branches(gpt_selected_program_urls),timeout=1000)
     #await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=1000)
     tasks = [simple_fetch(url) for url in program_branches[0]]
