@@ -18,6 +18,7 @@ from program_url_detector import detect_prorgams
 from gpt_program_content import get_prorgam_name
 from google_search import get_program_info
 from compress import batch_compress
+from get_degree import get_names_and_degree
 import nltk
 from gensim.models import KeyedVectors
 from nltk.tokenize import sent_tokenize
@@ -156,12 +157,9 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
                 print("fetching dimension metrics for "+sc[j]+"...")
+                names = await get_names_and_degree(program_branches[j])
                 try:
-                    await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=1000)
-                except TimeoutError:
-                    print("Timeout for getting program names")
-                try:
-                    _metrics = await asyncio.wait_for(get_program_info(sc[j],program_name_storage),timeout=1000)
+                    _metrics = await asyncio.wait_for(get_program_info(sc[j],names),timeout=1000)
                 except TimeoutError:
                     print("Timeout for getting metrics")
                 current_program_names = list(_metrics.keys())
@@ -216,11 +214,13 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
                 program_info = await asyncio.gather(*tasks)
                 res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
                 res[sc[j]]['graduate']['program_info'] = program_info
-                print("fetching dimension metrics...")
-                await get_prorgam_name(program_info,program_name_storage)
-                _metrics = await get_program_info(sc[j],program_name_storage)
+                print("fetching dimension metrics for "+sc[j]+"...")
+                names = await get_names_and_degree(program_branches[j])
+                try:
+                    _metrics = await asyncio.wait_for(get_program_info(sc[j],names),timeout=1000)
+                except TimeoutError:
+                    print("Timeout for getting metrics")
                 current_program_names = list(_metrics.keys())
-                print(current_program_names)
                 ##notice the order of the program names
                 processed_metrics = await batch_compress(_metrics,sc[j],current_program_names)
                 for k in range(len(current_program_names)):

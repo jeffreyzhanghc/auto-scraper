@@ -23,6 +23,7 @@ from gensim.models import KeyedVectors
 from nltk.tokenize import sent_tokenize
 import numpy as np
 import gensim.downloader as api
+from get_degree import get_names_and_degree
 
 
 seed_urls = os.getenv("seed_urls")
@@ -52,10 +53,13 @@ async def simple_fetch(url):
         return (url,None,None)  # Return None or some error indicator
     
 async def main():
-    await detect_prorgams(["Yale University"],program_urls,gpt_selected_program_urls)
+    await detect_prorgams(["Princeton University"],program_urls,gpt_selected_program_urls)
     program_branches,entry_pages = await asyncio.wait_for(get_program_branches(gpt_selected_program_urls),timeout=1000)
     #await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=1000)
-    tasks = [simple_fetch(url) for url in program_branches[0]]
-    program_info = await asyncio.wait_for(asyncio.gather(*tasks),timeout=1000)
-    await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=1000)
+    #tasks = [simple_fetch(url) for url in program_branches[0]]
+    #program_info = await asyncio.wait_for(asyncio.gather(*tasks),timeout=1000)
+    #await asyncio.wait_for(get_prorgam_name(program_info,program_name_storage),timeout=1000)
+    print(len(program_branches[0]),"branchl")
+    names = await get_names_and_degree(program_branches)
+    
 asyncio.run(main())

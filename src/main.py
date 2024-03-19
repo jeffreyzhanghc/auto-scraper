@@ -10,6 +10,7 @@ load_dotenv()
 
 #load variables
 universities = [
+    "Princeton University",
     "The University of Texas at Austin",
     "Auburn University",
     "Cornell University",
