@@ -71,10 +71,11 @@ async def call_chatgpt_async(session, text: list):
             
             There is only ONE program described in the given text, so results are expect to have one key and one list value containing degrees you identified.
 
-            There are three cases you should consider:
+            There are four cases you should consider:
             1) program names can be found and degrees offered can be found, then key is the program name and value is list of degrees;
             2) program names can be found but degrees cannot be identified, then key is the program name and value is list containing one element "graduate program";
             3) the given texts is not considered to be related to specific field of study, and program names cannot be determined, then key is "not program info" and value is None;
+            4) When the given text is None, in this case, just do the same as case 3) return key is "not program info" and value is None;
 
             Strict follow the 3 scenarios above and do not hallucinate or fabricate any results!!!
 
@@ -120,8 +121,12 @@ async def normal_compress(sentences,keywords):
 async def get_sentences(text):
     nlp = English()
     nlp.add_pipe('sentencizer')
-    doc = nlp(text)
-    sentences = [sent.text.strip() for sent in doc.sents]
+    try:
+        doc = nlp(text)
+        sentences = [sent.text.strip() for sent in doc.sents]
+    except:
+        print("receiving none text at get_Sentences step")
+        sentences = []
     return sentences
 
 async def parse(urls):
@@ -151,7 +156,7 @@ async def get_names_and_degree(urls):
             if name == "not program info":continue
             for d in deg:
                 #filter certificate
-                if 'certificate' in d.lower(): continue
+                if 'certificate' in d.lower() or 'exchange' in d.lower() or 'joint degree' in d.lower(): continue
                 program_names.append(d+" in "+name)
     with open("../knowledge_files/program_name_list.json",'w') as f:
         json.dump(program_names,f,indent=4)
