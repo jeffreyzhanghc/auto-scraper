@@ -11,6 +11,8 @@ Generalizale crawling methods using GPT to legally fetch admission related info 
     - [Install dependencies for python scripts](#Install-dependencies-for-python-scripts)
   - [Configuration](#configuration)
   - [Run your scripts](#run-your-scripts)
+    - [Run General crawler](#run-general)
+    - [Run program crawler](#run-program)
 - [Check your output](#check-your-output)
   
 
@@ -67,9 +69,12 @@ batch_size = 2
 program_name_storage = "../knowledge_files/program_name_list.json"
 #your serper key for google search
 serperkey = "YOUR KEY"
+# list of universities you want to search
+universities = ["your universities"]
 ```
 
 #### Run your scripts
+#### run-general
 Before running, you need to acquire list of university names that you want the admissino info about and open src/main.py to modify the universities variable, an efficient way will be ask ChatGPT to get the list
 ```sh
 cd ./src
@@ -96,10 +101,10 @@ Under your output path, you should find output in .json with properties similar 
                     "date_updated": 
                 }
             ],
-            "program_info": []
         },
         "Date_fetched": 
     }
 }
 
 ```
+

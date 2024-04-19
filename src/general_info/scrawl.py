@@ -4,26 +4,15 @@ import subprocess
 import concurrent.futures
 from trafilatura import fetch_url, extract, metadata
 from dotenv import load_dotenv, find_dotenv
-#import newspaper
 import asyncio
 import time
 import logging
-from program_page_handler import get_program_branches
 from asyncio import Semaphore
 import datetime
 import os
-from collect_seed_url import collect_seed_url
-from seed_url_detector import seed_url_detector
-from program_url_detector import detect_prorgams
-from gpt_program_content import get_prorgam_name
-from google_search import get_program_info
-from compress import batch_compress
-from get_degree import get_names_and_degree
-import nltk
-from gensim.models import KeyedVectors
-from nltk.tokenize import sent_tokenize
-import numpy as np
-import gensim.downloader as api
+from .collect_seed_url import collect_seed_url
+from .seed_url_detector import seed_url_detector
+from .program_url_detector import detect_prorgams
 
 
 
@@ -112,7 +101,7 @@ async def get_info(seed_url,file_name,batch_size,school_name):
     return output
 
 
-async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,program_name_storage,results_path,i,end,batch_size = 3):
+async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_selected_program_urls,results_path,i,end,batch_size = 3):
     a = {}
     with open(results_path, 'w') as f:
         json.dump(a, f)
@@ -139,45 +128,11 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res = json.load(file)
         tasks = [get_info(url,"output"+str(j)+".json",batch_size,school) for url,school,j in zip(gu,sc,range(batch_size))]
         fetched_info = await asyncio.gather(*tasks)
-        try:
-            program_branches,entry_pages = await asyncio.wait_for(get_program_branches(gpt_selected_program_urls),timeout=1000)
-        except TimeoutError:
-            print("Timeout for fetching program branches")
         for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
-            res[sc[j]]['Date_fetched'] = datetime.datetime.now().strftime('%Y-%m-%d')
             res[sc[j]]['graduate']['general_info'] = fetched_info[j]
-            if program_branches[j]:
-                try:  
-                    tasks = [simple_fetch(url) for url in program_branches[j]]
-                    program_info = await asyncio.wait_for(asyncio.gather(*tasks),timeout=1000)
-                except TimeoutError:
-                    print("Timeout for fetching websites")
-                res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
-                res[sc[j]]['graduate']['program_info'] = program_info
-                print("fetching dimension metrics for "+sc[j]+"...")
-                names = await get_names_and_degree(program_branches[j])
-                try:
-                    _metrics = await asyncio.wait_for(get_program_info(sc[j],names),timeout=1000)
-                except TimeoutError:
-                    print("Timeout for getting metrics")
-                current_program_names = list(_metrics.keys())
-                ##notice the order of the program names
-                try:
-                    processed_metrics = await asyncio.wait_for(batch_compress(_metrics,current_program_names),timeout=6000)
-                except TimeoutError:
-                    print("Timeout for compressing metrics")
-                for k in range(len(current_program_names)):
-                    _metrics[current_program_names[k]] = processed_metrics[k]
-                res[sc[j]]['graduate']['metrics'] = _metrics                
-
-
-
-            else:
-                res[sc[j]]['graduate']['programs_main_entry'] = None
-                res[sc[j]]['graduate']['program_info'] = None
-                res[sc[j]]['graduate']['metircs'] = None
+   
         #update json
         with open(results_path, 'w', encoding='utf-8') as file:
             json.dump(res, file, ensure_ascii=False, indent=4)
@@ -203,35 +158,11 @@ async def scrawl(universities,seed_urls,gpt_selected_seed_urls,program_urls,gpt_
             res = json.load(file)
         tasks = [get_info(url,"output"+str(i)+".json",batch_size,school) for url,school,i in zip(gu,sc,range(end-i))]
         fetched_info = await asyncio.gather(*tasks)
-        program_branches,entry_pages = await get_program_branches(gpt_selected_program_urls)
         for j in range(batch_size):
             res[sc[j]] = {}
             res[sc[j]]['graduate'] = {}
-            res[sc[j]]['Date_fetched'] = datetime.datetime.now().strftime('%Y-%m-%d')
             res[sc[j]]['graduate']['general_info'] = fetched_info[j]
-            if program_branches[j]:
-                tasks = [simple_fetch(url) for url in program_branches[j]]
-                program_info = await asyncio.gather(*tasks)
-                res[sc[j]]['graduate']['programs_main_entry'] = entry_pages[j]
-                res[sc[j]]['graduate']['program_info'] = program_info
-                print("fetching dimension metrics for "+sc[j]+"...")
-                names = await get_names_and_degree(program_branches[j])
-                try:
-                    _metrics = await asyncio.wait_for(get_program_info(sc[j],names),timeout=1000)
-                except TimeoutError:
-                    print("Timeout for getting metrics")
-                current_program_names = list(_metrics.keys())
-                ##notice the order of the program names
-                processed_metrics = await batch_compress(_metrics,sc[j],current_program_names)
-                for k in range(len(current_program_names)):
-                    _metrics[current_program_names[k]] = processed_metrics[k]
-                res[sc[j]]['graduate']['metrics'] = _metrics
-            else:
-                res[sc[j]]['graduate']['programs_main_entry'] = None
-                res[sc[j]]['graduate']['program_info'] = None
-                res[sc[j]]['graduate']['metrics'] = None
-
-
+        
         
     end_time = time.time()
     total_run_time = round(end_time-start_time, 3)

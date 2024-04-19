@@ -1,7 +1,4 @@
 import sys
-#must be python 3.11 or above to use some of the library
-print(sys.version)
-
 import re
 import os
 import openai
@@ -9,9 +6,7 @@ from openai import OpenAI
 import time
 from dotenv import load_dotenv, find_dotenv
 import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
-import collections
 import aiohttp
 import ssl
 import asyncio

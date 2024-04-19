@@ -2,17 +2,9 @@ from trafilatura import fetch_url, extract,bare_extraction,metadata
 from playwright.async_api import async_playwright
 import re
 import os
-import openai
 from openai import OpenAI
 from dotenv import load_dotenv, find_dotenv
-import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import time
-import collections
-import aiohttp
-import ssl
 import asyncio
-import certifi
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -21,8 +13,6 @@ from tenacity import (
     before_log, 
     after_log
 ) 
-import logging
-import spacy
 from spacy.lang.en import English
 import html_text
 import nltk
@@ -139,11 +129,7 @@ async def simple_fetch_with_playwright(url):
     
 async def compress_metric(raw_metrics,program_name,semaphore):
     async with semaphore:
-        name_to_keywords = {"Deadline":['deadline', 'application due','application deadline',"submit material","material submitted"], \
-                            "GRERequirement":['GRE',"Graduate Record Examination","Graduate Record Examination", "test scores","GMAT"],\
-                            "TOEFLRequirement":['toefl',"ielts"],\
-                            "prerequisiteCourse":['course requirement',"introductory coursework","academic preparation","academic backgrounds","prerequisite course"],\
-                            "recommendations":["recommendation","letters of recommendation","letters of reference"],}
+
         q = raw_metrics[program_name]
         metric_name = list(q.keys())
         
@@ -171,26 +157,7 @@ async def compress_metric(raw_metrics,program_name,semaphore):
                 continue
             for name in names:
                 q[name]['originalText'].append(text)
-            nlp = English()
-            nlp.add_pipe('sentencizer')
 
-            doc = nlp(text)
-
-            sentences = [sent.text.strip() for sent in doc.sents]
-            for name in names:
-                    keywords = name_to_keywords[name]        
-                    if name == "prerequisiteCourse":
-                        try:
-                            algo_sentences = await asyncio.wait_for(special_compress(sentences,keywords,0.65,model),timeout=1500)
-                            keyword_sentences = await asyncio.wait_for(normal_compress(sentences,keywords),timeout=1000)
-                            relevant_sentences = algo_sentences+keyword_sentences
-                        except TimeoutError:
-                            print("Timeout for special compress")
-                    elif name == "GRERequirement":
-                        relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence for keyword in keywords)]
-                    else:
-                        relevant_sentences = await normal_compress(sentences,keywords)
-                    q[name]['compressedText'].append(relevant_sentences)
         return q
 
 async def batch_semaphore(part_metrics,sliced_names,semaphore):
@@ -209,20 +176,6 @@ async def batch_compress(raw_metrics,program_names):
         print("fetch response timeout")
     return responses
 
-'''
-with open("grad_info.json", 'r') as file:
-    data = json.load(file)
-mm = data["Washington University in St. Louis"]["graduate"]["metrics"]["Full-time Master of Business Administration (MBA)"]["prerequisiteCourse"]["link"]
-key = ['course requirement',"introductory coursework","academic preparation","coursework preparation","academic backgrounds","prerequisite course"]
-text = asyncio.run(simple_fetch_with_playwright("https://olin.wustl.edu/programs/mbas/full-time-mba/apply.php"))
-nlp = English()
-nlp.add_pipe('sentencizer')
-
-doc = nlp(text)
-
-sentences = [sent.text.strip() for sent in doc.sents]
-print(asyncio.run(special_compress(sentences,key,0.65,model)))
-'''
 
 
 

@@ -6,9 +6,6 @@ import openai
 from openai import OpenAI
 from dotenv import load_dotenv, find_dotenv
 import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import time
-import collections
 import aiohttp
 import ssl
 import asyncio
@@ -18,18 +15,11 @@ from tenacity import (
     stop_after_attempt,
     wait_random_exponential,
     retry_if_exception_type,
-    before_log, 
-    after_log
 ) 
 import logging
-import spacy
 from spacy.lang.en import English
 import html_text
-import nltk
-from gensim.models import KeyedVectors
-from nltk.tokenize import sent_tokenize
-import numpy as np
-import gensim.downloader as api
+
 
 load_dotenv()
 serperkey = os.getenv("serperkey")
@@ -69,7 +59,8 @@ async def call_chatgpt_async(session, text: list):
             accurately. Return the results in a JSON format. Return the results in format where key is the program name and values are lists that contains 
             degree offered by the program described in webpage. 
             
-            There is only ONE program described in the given text, so results are expect to have one key and one list value containing degrees you identified.
+            There is only ONE program described in the given text, so results are expect to have one key and one list value containing degrees you identified.And remember,
+            the given text describes specific field of study.
 
             There are four cases you should consider:
             1) program names can be found and degrees offered can be found, then key is the program name and value is list of degrees;
@@ -77,7 +68,7 @@ async def call_chatgpt_async(session, text: list):
             3) the given texts is not considered to be related to specific field of study, and program names cannot be determined, then key is "not program info" and value is None;
             4) When the given text is None, in this case, just do the same as case 3) return key is "not program info" and value is None;
 
-            Strict follow the 3 scenarios above and do not hallucinate or fabricate any results!!!
+            Strict follow the 4 scenarios above and DO NOT hallucinate or fabricate any program names and degrees information!!!
 
             """
     payload = {
@@ -110,9 +101,12 @@ async def summarize(texts):
     '''
     async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
         #task1 = [tg.create_task(call_chatgpt_async(session, url[:idx])) for url in url_sets]
-        task1 = [tg.create_task(call_chatgpt_async(session, text)) for text in texts]
+        idx = len(texts)//2
+        task1 = [tg.create_task(call_chatgpt_async(session, text)) for text in texts[:idx]]
+        task2 = [tg.create_task(call_chatgpt_async(session, text)) for text in texts[idx:]]
         response1 = await asyncio.gather(*task1)
-    return response1
+        response2 = await asyncio.gather(*task2)
+    return response1+response2
 
 async def normal_compress(sentences,keywords):
     relevant_sentences = [sentence for sentence in sentences if any(keyword in sentence.lower() for keyword in keywords)]
@@ -135,11 +129,8 @@ async def parse(urls):
         task1 = [tg.create_task(simple_fetch_with_playwright(url,semaphore)) for url in urls]
         response1 = await asyncio.gather(*task1)
         sentences = response1
-        print("kul",len(urls))
-        print("zul",len(sentences))
         task2 = [tg.create_task(get_sentences(sentence)) for sentence in sentences]
         response2 = await asyncio.gather(*task2)
-        print("mmm",len(response2))
         return response2
 
 async def get_names_and_degree(urls):
@@ -156,16 +147,12 @@ async def get_names_and_degree(urls):
             if name == "not program info":continue
             for d in deg:
                 #filter certificate
-                if 'certificate' in d.lower() or 'exchange' in d.lower() or 'joint degree' in d.lower(): continue
+                if 'certificat' in d.lower() or 'exchange' in d.lower() or 'online' in d.lower() or 'distance' in d.lower(): continue
                 program_names.append(d+" in "+name)
+    program_names_no_dup = list(set(program_names))
     with open("../knowledge_files/program_name_list.json",'w') as f:
-        json.dump(program_names,f,indent=4)
-    return program_names
-
-'''
-q = asyncio.run(main('https://sps.columbia.edu/academics/masters/construction-administration'))
-print(q)
-'''
+        json.dump(program_names_no_dup,f,indent=4)
+    return program_names_no_dup
 
 
 

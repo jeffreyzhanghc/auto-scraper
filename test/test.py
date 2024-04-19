@@ -1,4 +1,14 @@
-from trafilatura import fetch_url, extract
+import json
+from trafilatura import fetch_url, extract, metadata
+from dotenv import load_dotenv, find_dotenv
+#import newspaper
+import asyncio
+import logging
+from program_page_handler import get_program_branches
+from asyncio import Semaphore
+import os
+from program_url_detector import detect_prorgams
+from program_page_handler import get_program_branches
 from playwright.async_api import async_playwright
 import re
 import os
@@ -22,8 +32,21 @@ from tenacity import (
     before_log, 
     after_log
 ) 
-import logging
+from get_degree import get_names_and_degree
 
+
+
+
+
+seed_urls = os.getenv("seed_urls")
+gpt_selected_seed_urls = os.getenv("gpt_selected_seed_urls")
+program_urls = os.getenv("program_urls")
+gpt_selected_program_urls = os.getenv("gpt_selected_program_urls")
+final_output_path = os.getenv("final_output_path")
+i = int(os.getenv('start_index'))
+end = int(os.getenv('end_index'))
+batch_size = int(os.getenv('batch_size'))
+program_name_storage = os.getenv('program_name_storage')
 
 
 load_dotenv()
@@ -42,13 +65,26 @@ async def call_chatgpt_async(session, links: list):
     '''
     prompt = f"""
             '''{links}'''
-            Given the list of url, select the urls that you think are related to a specific master study program. The urls should indicate
-            a specific field of study. Notice that sometimes program names are in abbreviation,remember to take the abbreviation into consideration.
-            Also, you may see some urls of graduate information related pages, but do not include those url since they are not related to specific major fields
+            Given the list of url strings, select the url strings that you think are related to a specific master study program. Such strings should indicate
+            a specific field of study or academic majors. Notice that sometimes major names are in abbreviation,remember to take the abbreviation into consideration.
+
+            I will give you some examples:
+            You should select these kind of urls:
+            1) given url "https://graduateprograms.brown.edu/graduate-program/computational-biology-phd", you should include this url because you can tell from the
+            string that this url is related to computational-biology;
+            2) given "https://graduateprograms.brown.edu/graduate-program/political-science-phd", select it because it indicates field of study in political science;
+            3) given "https://graduateprograms.brown.edu/graduate-program/music-and-multimedia-composition-phd", select it becuase it indicates major in music and multimedia composition;
+            4) given 'https://grad.ucla.edu/programs/david-geffen-school-of-medicine/human-genetics-department/' select it because although it is a deparment level information, it relates to the 
+               human genetic fields of study. 
             
-            Return the selected in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
-            value. Try to make the decision fast and accurate. Provide the FULL RESULTS, DO NOT use ellipsis to skip content.
-            Under standards of choosing urls contains or indicating some field-of-studies,try to include AS MANY URLS AS POSSIBLE.
+            You should not choose following kind of urls:
+            1) given url "https://graduateprograms.brown.edu/home", you should not select this one because no specific majors/field of study is indicated by this url;
+            2) given "https://graduateprograms.brown.edu/home", do not select it because there is no major-specific information in the string;
+
+            Follow the examples when make the decision, the key is to find whether you can tell a field of study or abbreviation of it in the url. If yes, include it
+            even it is a department level urls.
+            Return the selected urls in a JSON output, with PROPERTY named 'selected' and the list of selected urls as
+            value. Try to make the decision fast and accurate, and I want the results to be comprehensive.
             """
     payload = {
         'model': "gpt-4-0125-preview",
@@ -124,58 +160,30 @@ async def fetch_with_playwright(url):
         print(f"Error fetching content from {url}: {e}")
         return None  # Return None or some error indicator assert the error
 
-async def fetch_all_url(url_sets):
-    '''
-    Given the page urls, the funciton asynchronously extract all urls on all pages
-    '''
-    async with aiohttp.ClientSession(trust_env=True) as session, asyncio.TaskGroup() as tg:
-        task1 = [tg.create_task(fetch_with_playwright(url[0])) for url in url_sets]
-        task2 = [tg.create_task(fetch_with_playwright(url[1])) for url in url_sets]
-        response1 = await asyncio.gather(*task1)
-        response2 = await asyncio.gather(*task2)
-    return [response1,response2]
 
-async def get_program_branches(url_file):
+async def get_urls(url):
     '''
     By using GPT, the function fecthes the program list url webpage and filter out the program related urls
     '''
-    with open(url_file, 'r') as file:
-        data = json.load(file)
-    program_urls = []
-    for element in data:
-        url = list(element.values())[0]
-        program_urls.append(url)
-        print("will fetch programs from following links:",url) 
-    results = []
-    for program_url in program_urls:
-        site1_links,site2_links = await fetch_all_url([program_url])
-        if site1_links[0] == None or site2_links[0] == None:
-            print("entry page cannot be fetched")
-            results.append([])
-        res_site1 = await call_chatgpt_bulk(site1_links)
-        if len(res_site1)<40:
-            print("Detect current program link numbers is smaller than 40, will include secondary entry pages")
-            res_site2 = await call_chatgpt_bulk(site2_links)
-            no_duplicates = list(set(res_site1+res_site2))
-            results.append(no_duplicates)
-        else:
-            results.append(res_site1)
-        print(len(results[0]),"res_return")
-    return (results,program_urls)
+    links = await fetch_with_playwright(url)
+    gpt_links = await call_chatgpt_bulk([links])
+    return gpt_links
+
     
-'''
-a,b = asyncio.run(fetch_all_url([["https://gradschool.utexas.edu/degrees-programs","https://gradschool.princeton.edu/academics/degrees-requirements/fields-study/ancient-world"]]))
-res_site1 = asyncio.run(call_chatgpt_bulk(a))
-print(len(res_site1))
-print(res_site1)
-'''
-
-
-
-
-
-
-
-
-
-
+async def main():
+    res = {}
+    with open("names.json","w") as file:
+        json.dump(res,file)
+    with open("0330 program list.json", 'r') as file:
+        data = json.load(file)
+    for sc in data.keys():
+        print(sc)
+        res[sc] = {}
+        entry_links = data[sc]
+        for l in entry_links:
+            q = await get_urls(l)
+            d = await get_names_and_degree(q)
+            res[sc][l] = d
+            with open("names.json","w") as file:
+                json.dump(res,file,indent=4)
+asyncio.run(main())
