@@ -2,6 +2,11 @@
 
 Generalizale crawling methods using GPT to legally fetch admission related info for assitant use
 
+## Acknowledgments
+
+This project incorporates components from [GPT Crawler](https://github.com/BuilderIO/gpt-crawler) by BuilderIO
+, which is licensed under the ISC License. I have modified parts of this tool to better integrate with our project requirements.
+
 
 
 - [Running locally](#running-locally)
